@@ -7,11 +7,13 @@ import React, {
   ReactNode,
 } from "react";
 import { storage, UserGoals, ProgressData, Settings } from "@/lib/storage";
+import Purchases, { CustomerInfo } from "react-native-purchases";
 import {
   getCustomerInfo,
   checkEntitlement,
   ENTITLEMENT_IDS,
   isRevenueCatInitialized,
+  initializeRevenueCat,
 } from "@/lib/revenuecat";
 
 interface AppState {
@@ -67,11 +69,29 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     loadInitialState();
   }, []);
 
+  // RevenueCat customer info listener for subscription state changes
+  useEffect(() => {
+    const customerInfoUpdateListener = (info: CustomerInfo) => {
+      const hasPremium = checkEntitlement(info, ENTITLEMENT_IDS.PREMIUM);
+      setIsSubscribed(hasPremium);
+    };
+
+    // Only add listener after RevenueCat is initialized
+    if (isRevenueCatInitialized()) {
+      Purchases.addCustomerInfoUpdateListener(customerInfoUpdateListener);
+    }
+
+    return () => {
+      if (isRevenueCatInitialized()) {
+        Purchases.removeCustomerInfoUpdateListener(customerInfoUpdateListener);
+      }
+    };
+  }, [isLoading]); // Re-run when loading completes (RevenueCat gets initialized)
+
   const loadInitialState = async () => {
     try {
       const [
         onboarding,
-        subscribed,
         goals,
         experience,
         streak,
@@ -81,7 +101,6 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         savedSettings,
       ] = await Promise.all([
         storage.getOnboardingComplete(),
-        storage.getIsSubscribed(),
         storage.getUserGoals(),
         storage.getUserExperience(),
         storage.getCurrentStreak(),
@@ -92,7 +111,6 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       ]);
 
       setOnboardingComplete(onboarding);
-      setIsSubscribed(subscribed);
       setUserGoalsState(goals);
       setUserExperienceState(experience);
       setCurrentStreak(streak);
@@ -100,6 +118,16 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       setSessionsCompleted(sessions);
       setProgressData(progress);
       setSettingsState(savedSettings);
+
+      // Initialize RevenueCat and fetch subscription status
+      const initialized = await initializeRevenueCat();
+      if (initialized) {
+        const customerInfo = await getCustomerInfo();
+        if (customerInfo) {
+          const hasPremium = checkEntitlement(customerInfo, ENTITLEMENT_IDS.PREMIUM);
+          setIsSubscribed(hasPremium);
+        }
+      }
     } catch (error) {
       console.error("Error loading app state:", error);
     } finally {
@@ -132,7 +160,6 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       if (customerInfo) {
         const hasPremium = checkEntitlement(customerInfo, ENTITLEMENT_IDS.PREMIUM);
         setIsSubscribed(hasPremium);
-        await storage.setIsSubscribed(hasPremium);
         return hasPremium;
       }
     } catch (error) {
@@ -143,7 +170,6 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
 
   const setSubscribedState = useCallback((subscribed: boolean) => {
     setIsSubscribed(subscribed);
-    storage.setIsSubscribed(subscribed);
   }, []);
 
   const recordSessionComplete = useCallback(
