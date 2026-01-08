@@ -10,6 +10,7 @@ import { StatCard } from "@/components/StatCard";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { useTheme } from "@/hooks/useTheme";
 import { useAppState } from "@/hooks/useAppState";
+import { useLanguage } from "@/hooks/useLanguage";
 import { Spacing, Typography, BorderRadius } from "@/constants/theme";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 import { plans, getDemoSession } from "@/lib/trainingData";
@@ -18,6 +19,7 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function DashboardScreen() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const insets = useSafeAreaInsets();
   const tabBarHeight = useBottomTabBarHeight();
   const navigation = useNavigation<NavigationProp>();
@@ -71,16 +73,16 @@ export default function DashboardScreen() {
     >
       <View style={styles.header}>
         <View>
-          <ThemedText style={styles.greeting}>Welcome back</ThemedText>
+          <ThemedText style={styles.greeting}>{t.dashboard.welcomeBack}</ThemedText>
           <ThemedText style={[styles.subtitle, { color: theme.textSecondary }]}>
-            Ready for your workout?
+            {t.dashboard.readyForWorkout}
           </ThemedText>
         </View>
         {currentStreak > 0 ? (
           <View style={[styles.streakBadge, { backgroundColor: theme.accent + "20" }]}>
             <Feather name="zap" size={16} color={theme.accent} />
             <ThemedText style={[styles.streakText, { color: theme.accent }]}>
-              {currentStreak} day streak
+              {currentStreak} {currentStreak === 1 ? t.dashboard.day : t.dashboard.days} streak
             </ThemedText>
           </View>
         ) : null}
@@ -88,19 +90,19 @@ export default function DashboardScreen() {
 
       <View style={styles.statsRow}>
         <StatCard
-          title="Streak"
-          value={`${currentStreak} days`}
+          title={t.progress.streak}
+          value={`${currentStreak} ${t.dashboard.days}`}
           icon="zap"
           color={theme.accent}
         />
         <StatCard
-          title="Total Time"
-          value={`${totalMinutes} min`}
+          title={t.dashboard.totalTime}
+          value={`${totalMinutes} ${t.dashboard.mins}`}
           icon="clock"
           color={theme.primary}
         />
         <StatCard
-          title="Sessions"
+          title={t.dashboard.sessions}
           value={sessionsCompleted}
           icon="check-circle"
           color={theme.success}
@@ -118,7 +120,7 @@ export default function DashboardScreen() {
             <ThemedText
               style={[styles.recommendedLabel, { color: theme.primary }]}
             >
-              Recommended Next
+              {t.dashboard.recommendedSession}
             </ThemedText>
             <ThemedText style={styles.recommendedTitle}>
               {nextSession?.title || "Demo Session"}
@@ -128,7 +130,7 @@ export default function DashboardScreen() {
             style={[styles.dayBadge, { backgroundColor: theme.primary + "20" }]}
           >
             <ThemedText style={[styles.dayText, { color: theme.primary }]}>
-              Day {currentDayIndex}
+              {t.library.day} {currentDayIndex}
             </ThemedText>
           </View>
         </View>
@@ -150,7 +152,7 @@ export default function DashboardScreen() {
           </View>
         </View>
         <PrimaryButton
-          title="Start Session"
+          title={t.dashboard.startSession}
           onPress={handleStartSession}
           icon="play"
           size="large"
@@ -174,12 +176,12 @@ export default function DashboardScreen() {
             <Feather name="unlock" size={24} color={theme.accent} />
             <View style={styles.upgradeText}>
               <ThemedText style={styles.upgradeTitle}>
-                Unlock Full Access
+                {t.paywall.unlockFullAccess}
               </ThemedText>
               <ThemedText
                 style={[styles.upgradeDesc, { color: theme.textSecondary }]}
               >
-                Get all training programs and track your progress
+                {t.paywall.startJourney}
               </ThemedText>
             </View>
           </View>
@@ -189,10 +191,10 @@ export default function DashboardScreen() {
 
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <ThemedText style={styles.sectionTitle}>Training Programs</ThemedText>
+          <ThemedText style={styles.sectionTitle}>{t.dashboard.allPrograms}</ThemedText>
           <Pressable onPress={handleViewLibrary}>
             <ThemedText style={[styles.seeAll, { color: theme.primary }]}>
-              See All
+              {t.dashboard.viewLibrary}
             </ThemedText>
           </Pressable>
         </View>
@@ -214,7 +216,7 @@ export default function DashboardScreen() {
               <ThemedText
                 style={[styles.planDuration, { color: theme.textSecondary }]}
               >
-                {plan.durationDays} days
+                {plan.durationDays} {t.dashboard.days}
               </ThemedText>
             </View>
             <Feather name="chevron-right" size={20} color={theme.textSecondary} />

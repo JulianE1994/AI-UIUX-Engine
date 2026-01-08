@@ -8,6 +8,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { PlanCard } from "@/components/PlanCard";
 import { useTheme } from "@/hooks/useTheme";
 import { useAppState } from "@/hooks/useAppState";
+import { useLanguage } from "@/hooks/useLanguage";
 import { Spacing, Typography, BorderRadius } from "@/constants/theme";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 import { plans, Plan } from "@/lib/trainingData";
@@ -19,12 +20,20 @@ type Level = (typeof levels)[number];
 
 export default function LibraryScreen() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const insets = useSafeAreaInsets();
   const tabBarHeight = useBottomTabBarHeight();
   const navigation = useNavigation<NavigationProp>();
   const { isSubscribed, progressData, sessionsCompleted } = useAppState();
 
   const [selectedLevel, setSelectedLevel] = useState<Level>("all");
+
+  const levelLabels: Record<Level, string> = {
+    all: t.library.all,
+    beginner: t.library.beginner,
+    intermediate: t.library.intermediate,
+    advanced: t.library.advanced,
+  };
 
   const filteredPlans =
     selectedLevel === "all"
@@ -49,9 +58,9 @@ export default function LibraryScreen() {
   return (
     <View style={[styles.container, { backgroundColor: theme.backgroundRoot }]}>
       <View style={[styles.header, { paddingTop: insets.top + Spacing.xl }]}>
-        <ThemedText style={styles.title}>Training Library</ThemedText>
+        <ThemedText style={styles.title}>{t.library.title}</ThemedText>
         <ThemedText style={[styles.subtitle, { color: theme.textSecondary }]}>
-          Choose a program that fits your goals
+          {t.library.subtitle}
         </ThemedText>
       </View>
 
@@ -86,7 +95,7 @@ export default function LibraryScreen() {
                   },
                 ]}
               >
-                {level.charAt(0).toUpperCase() + level.slice(1)}
+                {levelLabels[level]}
               </ThemedText>
             </Pressable>
           ))}

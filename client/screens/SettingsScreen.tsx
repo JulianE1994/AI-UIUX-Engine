@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet, ScrollView, Pressable, Switch, Alert } from "react-native";
+import { View, StyleSheet, ScrollView, Pressable, Switch, Alert, Modal } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
@@ -8,6 +8,8 @@ import { Feather } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
 import { useAppState } from "@/hooks/useAppState";
+import { useLanguage } from "@/hooks/useLanguage";
+import { languageNames, Language } from "@/lib/translations";
 import { Spacing, Typography, BorderRadius } from "@/constants/theme";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 
@@ -85,6 +87,7 @@ export default function SettingsScreen() {
   const navigation = useNavigation<NavigationProp>();
   const { isSubscribed, settings, updateSettings, resetProgress, resetAll } =
     useAppState();
+  const { language, setLanguage, t } = useLanguage();
 
   const [soundEnabled, setSoundEnabled] = useState(settings.soundEnabled);
   const [vibrationEnabled, setVibrationEnabled] = useState(
@@ -93,6 +96,12 @@ export default function SettingsScreen() {
   const [reminderEnabled, setReminderEnabled] = useState(
     settings.reminderEnabled
   );
+  const [showLanguagePicker, setShowLanguagePicker] = useState(false);
+
+  const handleLanguageSelect = async (lang: Language) => {
+    await setLanguage(lang);
+    setShowLanguagePicker(false);
+  };
 
   const handleSoundToggle = async (value: boolean) => {
     setSoundEnabled(value);
@@ -111,12 +120,12 @@ export default function SettingsScreen() {
 
   const handleResetProgress = () => {
     Alert.alert(
-      "Reset Progress",
-      "This will clear all your training history, streaks, and statistics. This cannot be undone.",
+      t.settings.resetProgress,
+      t.settings.resetProgressAlert,
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t.common.cancel, style: "cancel" },
         {
-          text: "Reset",
+          text: t.common.reset,
           style: "destructive",
           onPress: () => resetProgress(),
         },
@@ -126,12 +135,12 @@ export default function SettingsScreen() {
 
   const handleDeleteAccount = () => {
     Alert.alert(
-      "Delete All Data",
-      "This will delete all your data including settings, progress, and preferences. You will need to complete onboarding again.",
+      t.settings.deleteAllData,
+      t.settings.deleteDataAlert,
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t.common.cancel, style: "cancel" },
         {
-          text: "Delete",
+          text: t.common.delete,
           style: "destructive",
           onPress: () => resetAll(),
         },
@@ -155,19 +164,19 @@ export default function SettingsScreen() {
       ]}
       showsVerticalScrollIndicator={false}
     >
-      <ThemedText style={styles.title}>Settings</ThemedText>
+      <ThemedText style={styles.title}>{t.settings.title}</ThemedText>
 
       <View style={[styles.section, { backgroundColor: theme.cardBackground }]}>
         <ThemedText style={[styles.sectionTitle, { color: theme.textSecondary }]}>
-          Subscription
+          {t.settings.subscription}
         </ThemedText>
         <SettingRow
           icon="credit-card"
-          title={isSubscribed ? "Premium Active" : "Free Plan"}
+          title={isSubscribed ? t.settings.premiumActive : t.settings.freePlan}
           subtitle={
             isSubscribed
-              ? "You have full access to all features"
-              : "Upgrade to unlock all training programs"
+              ? t.settings.fullAccess
+              : t.settings.upgradeToUnlock
           }
           onPress={handleManageSubscription}
         />
@@ -175,12 +184,12 @@ export default function SettingsScreen() {
 
       <View style={[styles.section, { backgroundColor: theme.cardBackground }]}>
         <ThemedText style={[styles.sectionTitle, { color: theme.textSecondary }]}>
-          Session Preferences
+          {t.settings.sessionPreferences}
         </ThemedText>
         <SettingRow
           icon="volume-2"
-          title="Sound Effects"
-          subtitle="Play sounds during exercises"
+          title={t.settings.soundEffects}
+          subtitle={t.settings.soundEffectsDesc}
           rightElement={
             <Switch
               value={soundEnabled}
@@ -192,8 +201,8 @@ export default function SettingsScreen() {
         />
         <SettingRow
           icon="smartphone"
-          title="Vibration"
-          subtitle="Haptic feedback on phase changes"
+          title={t.settings.vibration}
+          subtitle={t.settings.vibrationDesc}
           rightElement={
             <Switch
               value={vibrationEnabled}
@@ -205,8 +214,8 @@ export default function SettingsScreen() {
         />
         <SettingRow
           icon="bell"
-          title="Daily Reminders"
-          subtitle="Get reminded to train"
+          title={t.settings.dailyReminders}
+          subtitle={t.settings.dailyRemindersDesc}
           rightElement={
             <Switch
               value={reminderEnabled}
@@ -216,44 +225,50 @@ export default function SettingsScreen() {
             />
           }
         />
+        <SettingRow
+          icon="globe"
+          title={t.settings.language}
+          subtitle={languageNames[language]}
+          onPress={() => setShowLanguagePicker(true)}
+        />
       </View>
 
       <View style={[styles.section, { backgroundColor: theme.cardBackground }]}>
         <ThemedText style={[styles.sectionTitle, { color: theme.textSecondary }]}>
-          About
+          {t.settings.about}
         </ThemedText>
         <SettingRow
           icon="info"
-          title="About Kegel Coach"
-          subtitle="Version 1.0.0"
+          title={t.settings.aboutKegelCoach}
+          subtitle={`${t.settings.version} 1.0.0`}
         />
         <SettingRow
           icon="shield"
-          title="Privacy Policy"
-          onPress={() => Alert.alert("Privacy Policy", "Privacy policy would open here.")}
+          title={t.settings.privacyPolicy}
+          onPress={() => Alert.alert(t.settings.privacyPolicy, "Privacy policy would open here.")}
         />
         <SettingRow
           icon="file-text"
-          title="Terms of Service"
-          onPress={() => Alert.alert("Terms of Service", "Terms of service would open here.")}
+          title={t.settings.termsOfService}
+          onPress={() => Alert.alert(t.settings.termsOfService, "Terms of service would open here.")}
         />
       </View>
 
       <View style={[styles.section, { backgroundColor: theme.cardBackground }]}>
         <ThemedText style={[styles.sectionTitle, { color: theme.textSecondary }]}>
-          Data Management
+          {t.settings.dataManagement}
         </ThemedText>
         <SettingRow
           icon="refresh-cw"
-          title="Reset Progress"
-          subtitle="Clear all training history"
+          title={t.settings.resetProgress}
+          subtitle={t.settings.resetProgressDesc}
           onPress={handleResetProgress}
           destructive
         />
         <SettingRow
           icon="trash-2"
-          title="Delete All Data"
-          subtitle="Remove all data and start fresh"
+          title={t.settings.deleteAllData}
+          subtitle={t.settings.deleteAllDataDesc}
           onPress={handleDeleteAccount}
           destructive
         />
@@ -261,10 +276,40 @@ export default function SettingsScreen() {
 
       <View style={styles.disclaimerContainer}>
         <ThemedText style={[styles.disclaimer, { color: theme.textSecondary }]}>
-          This app is for wellness education purposes only. Not medical advice.
-          Consult a doctor or physiotherapist if you experience pain or issues.
+          {t.settings.disclaimer}
         </ThemedText>
       </View>
+
+      <Modal
+        visible={showLanguagePicker}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowLanguagePicker(false)}
+      >
+        <Pressable 
+          style={styles.modalOverlay} 
+          onPress={() => setShowLanguagePicker(false)}
+        >
+          <View style={[styles.modalContent, { backgroundColor: theme.cardBackground }]}>
+            <ThemedText style={styles.modalTitle}>{t.settings.language}</ThemedText>
+            {(['en', 'de', 'fr', 'it'] as Language[]).map((lang) => (
+              <Pressable
+                key={lang}
+                style={[
+                  styles.languageOption,
+                  language === lang && { backgroundColor: theme.primary + '20' }
+                ]}
+                onPress={() => handleLanguageSelect(lang)}
+              >
+                <ThemedText style={styles.languageText}>{languageNames[lang]}</ThemedText>
+                {language === lang ? (
+                  <Feather name="check" size={20} color={theme.primary} />
+                ) : null}
+              </Pressable>
+            ))}
+          </View>
+        </Pressable>
+      </Modal>
     </ScrollView>
   );
 }
@@ -321,5 +366,34 @@ const styles = StyleSheet.create({
     ...Typography.small,
     textAlign: "center",
     fontStyle: "italic",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: Spacing.xl,
+  },
+  modalContent: {
+    width: '100%',
+    maxWidth: 320,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
+  },
+  modalTitle: {
+    ...Typography.h3,
+    marginBottom: Spacing.lg,
+    textAlign: 'center',
+  },
+  languageOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: Spacing.lg,
+    borderRadius: BorderRadius.sm,
+    marginBottom: Spacing.xs,
+  },
+  languageText: {
+    ...Typography.bodyMedium,
   },
 });

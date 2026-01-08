@@ -7,6 +7,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { useTheme } from "@/hooks/useTheme";
 import { useAppState } from "@/hooks/useAppState";
+import { useLanguage } from "@/hooks/useLanguage";
 import { Spacing, Typography, BorderRadius } from "@/constants/theme";
 
 type PlanType = "monthly" | "yearly" | "lifetime";
@@ -20,43 +21,37 @@ interface PricingPlan {
   popular?: boolean;
 }
 
-const pricingPlans: PricingPlan[] = [
-  {
-    id: "monthly",
-    name: "Monthly",
-    price: "$9.99",
-    period: "/month",
-  },
-  {
-    id: "yearly",
-    name: "Yearly",
-    price: "$59.99",
-    period: "/year",
-    savings: "Save 50%",
-    popular: true,
-  },
-  {
-    id: "lifetime",
-    name: "Lifetime",
-    price: "$149.99",
-    period: "one-time",
-  },
-];
-
-const benefits = [
-  "Access all training programs",
-  "14, 30, and 60-day plans",
-  "Beginner to Advanced levels",
-  "Detailed progress tracking",
-  "Personalized recommendations",
-  "New content updates",
-];
-
 export default function PaywallScreen() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const { subscribe, isSubscribed } = useAppState();
+
+  const pricingPlans: PricingPlan[] = [
+    {
+      id: "monthly",
+      name: t.paywall.monthly,
+      price: "$9.99",
+      period: t.paywall.perMonth,
+    },
+    {
+      id: "yearly",
+      name: t.paywall.yearly,
+      price: "$59.99",
+      period: t.paywall.perYear,
+      savings: t.paywall.bestValue,
+      popular: true,
+    },
+    {
+      id: "lifetime",
+      name: t.paywall.lifetime,
+      price: "$149.99",
+      period: t.paywall.oneTime,
+    },
+  ];
+
+  const benefits = t.paywall.benefits;
 
   const [selectedPlan, setSelectedPlan] = useState<PlanType>("yearly");
   const [isLoading, setIsLoading] = useState(false);
@@ -102,12 +97,12 @@ export default function PaywallScreen() {
           >
             <Feather name="check" size={48} color={theme.success} />
           </View>
-          <ThemedText style={styles.subscribedTitle}>You're Premium!</ThemedText>
+          <ThemedText style={styles.subscribedTitle}>{t.settings.premiumActive}</ThemedText>
           <ThemedText style={[styles.subscribedSubtitle, { color: theme.textSecondary }]}>
-            You have full access to all training programs and features.
+            {t.settings.fullAccess}
           </ThemedText>
           <PrimaryButton
-            title="Continue Training"
+            title={t.common.continue}
             onPress={() => navigation.goBack()}
             icon="play"
             size="large"
@@ -152,10 +147,10 @@ export default function PaywallScreen() {
             <Feather name="unlock" size={32} color={theme.primary} />
           </View>
           <ThemedText style={styles.heroTitle}>
-            Unlock Full Access
+            {t.paywall.unlockFullAccess}
           </ThemedText>
           <ThemedText style={[styles.heroSubtitle, { color: theme.textSecondary }]}>
-            Start your complete pelvic floor training journey
+            {t.paywall.startJourney}
           </ThemedText>
         </View>
 
@@ -192,7 +187,7 @@ export default function PaywallScreen() {
                   style={[styles.popularBadge, { backgroundColor: theme.primary }]}
                 >
                   <ThemedText style={[styles.popularText, { color: theme.buttonText }]}>
-                    Most Popular
+                    {t.paywall.mostPopular}
                   </ThemedText>
                 </View>
               ) : null}
@@ -246,7 +241,7 @@ export default function PaywallScreen() {
 
         <Pressable onPress={handleRestore} style={styles.restoreButton}>
           <ThemedText style={[styles.restoreText, { color: theme.textSecondary }]}>
-            Restore Purchase
+            {t.paywall.restorePurchases}
           </ThemedText>
         </Pressable>
       </ScrollView>
@@ -261,13 +256,13 @@ export default function PaywallScreen() {
         ]}
       >
         <PrimaryButton
-          title={`Subscribe - ${pricingPlans.find((p) => p.id === selectedPlan)?.price}`}
+          title={`${t.paywall.subscribe} - ${pricingPlans.find((p) => p.id === selectedPlan)?.price}`}
           onPress={handleSubscribe}
           loading={isLoading}
           size="large"
         />
         <ThemedText style={[styles.disclaimer, { color: theme.textSecondary }]}>
-          Cancel anytime. Subscription auto-renews.
+          {t.paywall.termsNote}
         </ThemedText>
       </View>
     </View>

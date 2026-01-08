@@ -7,10 +7,12 @@ import { ThemedText } from "@/components/ThemedText";
 import { StatCard } from "@/components/StatCard";
 import { useTheme } from "@/hooks/useTheme";
 import { useAppState } from "@/hooks/useAppState";
+import { useLanguage } from "@/hooks/useLanguage";
 import { Spacing, Typography, BorderRadius } from "@/constants/theme";
 
 export default function ProgressScreen() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const insets = useSafeAreaInsets();
   const tabBarHeight = useBottomTabBarHeight();
   const { currentStreak, totalMinutes, sessionsCompleted, progressData, isSubscribed } =
@@ -70,26 +72,26 @@ export default function ProgressScreen() {
       ]}
       showsVerticalScrollIndicator={false}
     >
-      <ThemedText style={styles.title}>Your Progress</ThemedText>
+      <ThemedText style={styles.title}>{t.progress.title}</ThemedText>
       <ThemedText style={[styles.subtitle, { color: theme.textSecondary }]}>
-        Track your pelvic floor training journey
+        {t.progress.subtitle}
       </ThemedText>
 
       <View style={styles.statsRow}>
         <StatCard
-          title="Current Streak"
+          title={t.dashboard.currentStreak}
           value={`${currentStreak}`}
           icon="zap"
           color={theme.accent}
         />
         <StatCard
-          title="Total Minutes"
+          title={t.progress.totalMinutes}
           value={`${totalMinutes}`}
           icon="clock"
           color={theme.primary}
         />
         <StatCard
-          title="Sessions"
+          title={t.dashboard.sessions}
           value={`${sessionsCompleted}`}
           icon="check-circle"
           color={theme.success}
@@ -100,7 +102,7 @@ export default function ProgressScreen() {
         style={[styles.weeklyGoalCard, { backgroundColor: theme.cardBackground }]}
       >
         <View style={styles.weeklyGoalHeader}>
-          <ThemedText style={styles.weeklyGoalTitle}>Weekly Goal</ThemedText>
+          <ThemedText style={styles.weeklyGoalTitle}>{t.progress.weeklyGoal}</ThemedText>
           <ThemedText style={[styles.weeklyGoalProgress, { color: theme.primary }]}>
             {completedThisWeek}/{weeklyGoal}
           </ThemedText>
@@ -118,8 +120,8 @@ export default function ProgressScreen() {
         </View>
         <ThemedText style={[styles.weeklyGoalHint, { color: theme.textSecondary }]}>
           {completedThisWeek >= weeklyGoal
-            ? "Goal achieved this week!"
-            : `${weeklyGoal - completedThisWeek} more sessions to reach your goal`}
+            ? t.progress.keepGoing
+            : `${weeklyGoal - completedThisWeek} ${t.progress.daysCompleted}`}
         </ThemedText>
       </View>
 

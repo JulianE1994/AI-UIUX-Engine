@@ -9,6 +9,7 @@ import { SelectionCard } from "@/components/SelectionCard";
 import { StepIndicator } from "@/components/StepIndicator";
 import { useTheme } from "@/hooks/useTheme";
 import { useAppState } from "@/hooks/useAppState";
+import { useLanguage } from "@/hooks/useLanguage";
 import { Spacing, Typography } from "@/constants/theme";
 import { OnboardingStackParamList } from "@/navigation/OnboardingStackNavigator";
 
@@ -19,6 +20,7 @@ type NavigationProp = NativeStackNavigationProp<
 
 export default function OnboardingExperienceScreen() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NavigationProp>();
   const { setUserExperience } = useAppState();
@@ -43,29 +45,29 @@ export default function OnboardingExperienceScreen() {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        <ThemedText style={styles.title}>Your experience level</ThemedText>
+        <ThemedText style={styles.title}>{t.onboarding.experienceTitle}</ThemedText>
         <ThemedText style={[styles.subtitle, { color: theme.textSecondary }]}>
-          This helps us recommend the right training program for you
+          {t.onboarding.experienceSubtitle}
         </ThemedText>
 
         <View style={styles.cards}>
           <SelectionCard
-            title="Beginner"
-            description="New to pelvic floor training or looking to start fresh"
+            title={t.onboarding.beginner}
+            description={t.onboarding.beginnerDesc}
             icon="star"
             selected={selectedLevel === "beginner"}
             onPress={() => setSelectedLevel("beginner")}
           />
           <SelectionCard
-            title="Intermediate"
-            description="Some experience with Kegel exercises, ready to progress"
+            title={t.onboarding.intermediate}
+            description={t.onboarding.intermediateDesc}
             icon="award"
             selected={selectedLevel === "intermediate"}
             onPress={() => setSelectedLevel("intermediate")}
           />
           <SelectionCard
-            title="Advanced"
-            description="Experienced practitioner seeking challenge and refinement"
+            title={t.onboarding.advanced}
+            description={t.onboarding.advancedDesc}
             icon="zap"
             selected={selectedLevel === "advanced"}
             onPress={() => setSelectedLevel("advanced")}
@@ -75,7 +77,7 @@ export default function OnboardingExperienceScreen() {
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + Spacing.xl }]}>
         <PrimaryButton
-          title="Continue"
+          title={t.common.continue}
           onPress={handleContinue}
           disabled={!selectedLevel}
           icon="arrow-right"

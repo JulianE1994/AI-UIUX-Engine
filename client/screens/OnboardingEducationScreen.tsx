@@ -7,45 +7,43 @@ import { PrimaryButton } from "@/components/PrimaryButton";
 import { StepIndicator } from "@/components/StepIndicator";
 import { useTheme } from "@/hooks/useTheme";
 import { useAppState } from "@/hooks/useAppState";
+import { useLanguage } from "@/hooks/useLanguage";
 import { Spacing, Typography, BorderRadius } from "@/constants/theme";
-
-const educationCards = [
-  {
-    id: "what",
-    title: "What are Kegel exercises?",
-    icon: "help-circle" as const,
-    content:
-      "Kegel exercises strengthen your pelvic floor muscles - the muscles that support your bladder, bowel, and for women, the uterus. Named after Dr. Arnold Kegel, these exercises involve contracting and relaxing these muscles to build strength and endurance.",
-  },
-  {
-    id: "benefits",
-    title: "Benefits of training",
-    icon: "award" as const,
-    content:
-      "Regular pelvic floor training can improve bladder control, enhance core stability, support postpartum recovery, and contribute to overall pelvic health. Consistent practice leads to better muscle awareness and control.",
-  },
-  {
-    id: "technique",
-    title: "Proper technique",
-    icon: "check-circle" as const,
-    content:
-      "To engage your pelvic floor correctly, imagine you're trying to stop the flow of urine or prevent passing gas. You should feel a gentle squeeze and lift. Keep your abdomen, thighs, and buttocks relaxed. Breathe normally throughout.",
-  },
-  {
-    id: "mistakes",
-    title: "Common mistakes",
-    icon: "alert-triangle" as const,
-    content:
-      "Avoid these common errors: holding your breath (breathe naturally), squeezing too hard (use gentle effort), pushing down instead of lifting up, tensing your abdomen or thighs, and skipping rest periods between contractions.",
-  },
-];
 
 export default function OnboardingEducationScreen() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const insets = useSafeAreaInsets();
   const { completeOnboarding } = useAppState();
 
   const [expandedCard, setExpandedCard] = useState<string | null>("what");
+
+  const educationCards = [
+    {
+      id: "what",
+      title: t.onboarding.whatAreKegels,
+      icon: "help-circle" as const,
+      content: t.onboarding.kegelsExplanation,
+    },
+    {
+      id: "benefits",
+      title: t.onboarding.howToPerform,
+      icon: "award" as const,
+      content: `${t.onboarding.howToStep1}. ${t.onboarding.howToStep2}. ${t.onboarding.howToStep3}. ${t.onboarding.howToStep4}.`,
+    },
+    {
+      id: "technique",
+      title: t.onboarding.howToPerform,
+      icon: "check-circle" as const,
+      content: t.onboarding.kegelsExplanation,
+    },
+    {
+      id: "mistakes",
+      title: t.onboarding.howToPerform,
+      icon: "alert-triangle" as const,
+      content: t.onboarding.kegelsExplanation,
+    },
+  ];
 
   const handleComplete = async () => {
     await completeOnboarding();
@@ -69,9 +67,9 @@ export default function OnboardingEducationScreen() {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        <ThemedText style={styles.title}>Quick education</ThemedText>
+        <ThemedText style={styles.title}>{t.onboarding.educationTitle}</ThemedText>
         <ThemedText style={[styles.subtitle, { color: theme.textSecondary }]}>
-          Learn the basics before you begin your journey
+          {t.onboarding.educationSubtitle}
         </ThemedText>
 
         <View style={styles.cards}>
@@ -130,7 +128,7 @@ export default function OnboardingEducationScreen() {
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + Spacing.xl }]}>
         <PrimaryButton
-          title="Start Training"
+          title={t.onboarding.readyToStart}
           onPress={handleComplete}
           icon="play"
           size="large"

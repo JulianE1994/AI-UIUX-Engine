@@ -7,6 +7,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { StepIndicator } from "@/components/StepIndicator";
 import { useTheme } from "@/hooks/useTheme";
+import { useLanguage } from "@/hooks/useLanguage";
 import { Spacing, Typography, BorderRadius } from "@/constants/theme";
 import { OnboardingStackParamList } from "@/navigation/OnboardingStackNavigator";
 
@@ -14,6 +15,7 @@ type NavigationProp = NativeStackNavigationProp<OnboardingStackParamList, "AgeGa
 
 export default function OnboardingAgeGateScreen() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NavigationProp>();
 
@@ -41,10 +43,10 @@ export default function OnboardingAgeGateScreen() {
           />
         </View>
 
-        <ThemedText style={styles.title}>Welcome to Kegel Coach</ThemedText>
+        <ThemedText style={styles.title}>{t.onboarding.welcome}</ThemedText>
 
         <ThemedText style={[styles.subtitle, { color: theme.textSecondary }]}>
-          Your personal guide to pelvic floor wellness
+          {t.onboarding.welcomeSubtitle}
         </ThemedText>
 
         <View
@@ -54,11 +56,10 @@ export default function OnboardingAgeGateScreen() {
           ]}
         >
           <ThemedText style={[styles.disclaimerTitle, { color: theme.primary }]}>
-            Age Verification Required
+            {t.onboarding.ageVerification}
           </ThemedText>
           <ThemedText style={[styles.disclaimerText, { color: theme.textSecondary }]}>
-            This app is designed for adults (18+) and focuses on pelvic floor
-            fitness and wellness education.
+            {t.onboarding.ageVerificationDesc}
           </ThemedText>
         </View>
 
@@ -69,21 +70,20 @@ export default function OnboardingAgeGateScreen() {
           ]}
         >
           <ThemedText style={[styles.warningText, { color: theme.text }]}>
-            Not medical advice. Consult a doctor or physiotherapist if you
-            experience pain or issues.
+            {t.settings.disclaimer}
           </ThemedText>
         </View>
       </View>
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + Spacing.xl }]}>
         <PrimaryButton
-          title="I am 18 or older"
+          title={t.onboarding.confirmAge}
           onPress={handleConfirm}
           icon="check"
           size="large"
         />
         <ThemedText style={[styles.footerText, { color: theme.textSecondary }]}>
-          By continuing, you confirm you are at least 18 years old
+          {t.onboarding.confirmAge}
         </ThemedText>
       </View>
     </View>

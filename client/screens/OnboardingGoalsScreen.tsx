@@ -9,6 +9,7 @@ import { SelectionCard } from "@/components/SelectionCard";
 import { StepIndicator } from "@/components/StepIndicator";
 import { useTheme } from "@/hooks/useTheme";
 import { useAppState } from "@/hooks/useAppState";
+import { useLanguage } from "@/hooks/useLanguage";
 import { Spacing, Typography } from "@/constants/theme";
 import { OnboardingStackParamList } from "@/navigation/OnboardingStackNavigator";
 
@@ -16,6 +17,7 @@ type NavigationProp = NativeStackNavigationProp<OnboardingStackParamList, "Goals
 
 export default function OnboardingGoalsScreen() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NavigationProp>();
   const { setUserGoals } = useAppState();
@@ -48,29 +50,29 @@ export default function OnboardingGoalsScreen() {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        <ThemedText style={styles.title}>What are your goals?</ThemedText>
+        <ThemedText style={styles.title}>{t.onboarding.goalsTitle}</ThemedText>
         <ThemedText style={[styles.subtitle, { color: theme.textSecondary }]}>
-          Select all that apply to personalize your training
+          {t.onboarding.goalsSubtitle}
         </ThemedText>
 
         <View style={styles.cards}>
           <SelectionCard
-            title="Build Endurance"
-            description="Increase stamina and sustain engagement for longer periods"
+            title={t.onboarding.goalEndurance}
+            description={t.onboarding.goalEnduranceDesc}
             icon="activity"
             selected={selectedGoals.endurance}
             onPress={() => toggleGoal("endurance")}
           />
           <SelectionCard
-            title="Improve Control"
-            description="Better coordination and precise muscle activation"
+            title={t.onboarding.goalControl}
+            description={t.onboarding.goalControlDesc}
             icon="target"
             selected={selectedGoals.control}
             onPress={() => toggleGoal("control")}
           />
           <SelectionCard
-            title="Support Recovery"
-            description="Restore strength and function after childbirth or surgery"
+            title={t.onboarding.goalRecovery}
+            description={t.onboarding.goalRecoveryDesc}
             icon="heart"
             selected={selectedGoals.recovery}
             onPress={() => toggleGoal("recovery")}
@@ -80,7 +82,7 @@ export default function OnboardingGoalsScreen() {
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + Spacing.xl }]}>
         <PrimaryButton
-          title="Continue"
+          title={t.common.continue}
           onPress={handleContinue}
           disabled={!hasSelection}
           icon="arrow-right"

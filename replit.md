@@ -11,6 +11,7 @@ Kegel Coach helps users improve their pelvic floor health through guided trainin
 - **Session Player**: Interactive timer-based workout with progress ring, phase indicators, and controls
 - **Progress Tracking**: Streaks, total minutes, completed sessions, calendar view
 - **Settings**: Sound/vibration preferences, reminders, account management
+- **Multi-language Support**: English, German (Deutsch), French (Français), Italian (Italiano)
 
 ## Tech Stack
 
@@ -38,10 +39,12 @@ client/
 │   └── theme.ts               # Design tokens (colors, spacing, typography)
 ├── hooks/
 │   ├── useAppState.tsx        # Global app state context
+│   ├── useLanguage.tsx        # Language/i18n context
 │   └── useTheme.ts            # Theme hook
 ├── lib/
 │   ├── storage.ts             # AsyncStorage utilities
 │   ├── trainingData.ts        # Training plans, sessions, exercises
+│   ├── translations.ts        # Multi-language translations (EN, DE, FR, IT)
 │   └── query-client.ts        # React Query configuration
 ├── navigation/
 │   ├── RootStackNavigator.tsx # Root navigation (onboarding vs main)
@@ -104,3 +107,4 @@ Scan QR code from Replit's URL bar to test on physical device via Expo Go.
 - Paywall is simulated (no real Stripe integration yet)
 - All data persisted locally with AsyncStorage
 - Dark mode supported automatically
+- Multi-language: All UI text translated to EN, DE, FR, IT (change in Settings)

@@ -10,6 +10,7 @@ import { ProgressRing } from "@/components/ProgressRing";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { useTheme } from "@/hooks/useTheme";
 import { useAppState } from "@/hooks/useAppState";
+import { useLanguage } from "@/hooks/useLanguage";
 import { Spacing, Typography, BorderRadius } from "@/constants/theme";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 import { getSessionById, getDemoSession, getExerciseById, SessionStep } from "@/lib/trainingData";
@@ -21,6 +22,7 @@ type Phase = "work" | "rest" | "countdown" | "completed";
 
 export default function SessionPlayerScreen() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<RouteProps>();
@@ -179,12 +181,12 @@ export default function SessionPlayerScreen() {
 
   const handleExit = () => {
     Alert.alert(
-      "Exit Session",
-      "Are you sure you want to exit? Your progress will be lost.",
+      t.session.exitSession,
+      t.session.exitSessionDesc,
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t.common.cancel, style: "cancel" },
         {
-          text: "Exit",
+          text: t.session.exit,
           style: "destructive",
           onPress: () => navigation.goBack(),
         },
@@ -217,13 +219,13 @@ export default function SessionPlayerScreen() {
   const getPhaseLabel = () => {
     switch (phase) {
       case "work":
-        return "Contract";
+        return t.session.contract;
       case "rest":
-        return "Relax";
+        return t.session.relax;
       case "countdown":
-        return "Get Ready";
+        return t.session.getReady;
       case "completed":
-        return "Complete!";
+        return t.session.wellDone;
       default:
         return "";
     }
@@ -269,9 +271,9 @@ export default function SessionPlayerScreen() {
           >
             <Feather name="check" size={48} color={theme.success} />
           </View>
-          <ThemedText style={styles.completedTitle}>Session Complete!</ThemedText>
+          <ThemedText style={styles.completedTitle}>{t.session.sessionComplete}</ThemedText>
           <ThemedText style={[styles.completedSubtitle, { color: theme.textSecondary }]}>
-            Great work on completing your training
+            {t.session.greatJob}
           </ThemedText>
 
           <View style={styles.completedStats}>
@@ -280,7 +282,7 @@ export default function SessionPlayerScreen() {
                 {Math.floor(totalTimeElapsed / 60)}:{String(totalTimeElapsed % 60).padStart(2, "0")}
               </ThemedText>
               <ThemedText style={[styles.statLabel, { color: theme.textSecondary }]}>
-                Duration
+                {t.session.duration}
               </ThemedText>
             </View>
             <View style={styles.completedStat}>
@@ -288,7 +290,7 @@ export default function SessionPlayerScreen() {
                 {totalSteps}
               </ThemedText>
               <ThemedText style={[styles.statLabel, { color: theme.textSecondary }]}>
-                Exercises
+                {t.session.exercisesCompleted}
               </ThemedText>
             </View>
           </View>
@@ -296,7 +298,7 @@ export default function SessionPlayerScreen() {
 
         <View style={styles.completedFooter}>
           <PrimaryButton
-            title="Done"
+            title={t.common.done}
             onPress={handleComplete}
             icon="check"
             size="large"
@@ -326,7 +328,7 @@ export default function SessionPlayerScreen() {
         </Pressable>
         <View style={styles.headerCenter}>
           <ThemedText style={[styles.stepLabel, { color: theme.textSecondary }]}>
-            Step {currentStepIndex + 1} of {totalSteps}
+            {t.session.step} {currentStepIndex + 1} {t.session.of} {totalSteps}
           </ThemedText>
         </View>
         <View style={styles.headerSpacer} />
