@@ -1,0 +1,243 @@
+You are a senior Full-Stack Engineer + UI/UX Designer. Build a PRODUCTION-READY Web App (PWA-capable) in Replit called “Kegel Coach” that interactively teaches users how to improve sexual vitality and endurance through pelvic floor / Kegel training. Focus: premium design, smooth animations, timer-based workouts, clear step-by-step guidance. ALL training plans and exercises are behind a paywall (Stripe). Only onboarding + previews are free.
+
+IMPORTANT (Compliance / Health):
+- App is strictly for adults (18+).
+- NO explicit sexual content, no pornographic visuals, no minors.
+- Clear disclaimer: “Not medical advice. Consult a doctor or physiotherapist if you experience pain or issues.”
+- Content framed as fitness / wellness (pelvic floor, breathing, coordination), neutral language.
+
+TECH STACK (Replit-compatible):
+- Next.js (App Router) + TypeScript
+- TailwindCSS + shadcn/ui (or Radix UI)
+- Framer Motion for animations (page transitions, progress, micro-interactions)
+- State: React Context or Zustand (lightweight)
+- Auth: Supabase Auth (Email, optional OAuth) OR NextAuth if Supabase unavailable
+- Database: Supabase Postgres (fallback: Prisma + SQLite)
+- Payments: Stripe Checkout + Stripe Customer Portal
+- Deployment-ready (env vars, build scripts, error boundaries)
+
+CORE FEATURES:
+
+1) Landing & Marketing
+- Hero section, benefits, “How it works”, testimonials (mock), pricing, FAQ
+- CTA: “Start Free” / “Unlock Training”
+
+2) Onboarding (Free)
+- Age gate (18+ confirmation)
+- Goals (endurance, control, recovery)
+- Experience level (Beginner / Intermediate / Advanced)
+- Reminder preferences (in-app reminders; notifications optional)
+- Short education: what Kegels are, common mistakes (over-squeezing, holding breath), proper breathing
+
+3) Paywall (Mandatory for training)
+- Free preview only:
+  - 1 demo session (e.g. 2 minutes)
+  - 2 sample exercises (locked afterward)
+- Subscription plans:
+  - Monthly
+  - Yearly
+  - Optional Lifetime
+- After purchase → “Unlocked” state with full access
+
+4) Training Library (Paywalled)
+- Training plans:
+  - Beginner (14 days)
+  - Intermediate (30 days)
+  - Advanced (60 days)
+- Each session includes:
+  - Warm-up (breathing, body awareness)
+  - Main workout (holds, pulses, endurance, relaxation)
+  - Cooldown (release & relaxation)
+- Each exercise includes:
+  - Name & short description
+  - Technique cues
+  - Common mistakes
+  - Intensity level
+  - Sets / reps / hold time
+  - Timer & interval logic
+  - Optional sound cues / vibration
+  - Pause / resume / skip
+  - Notes
+
+5) Interactive Session Player (Core Feature)
+- Fullscreen timer-based workout UI:
+  - Current exercise
+  - Animated progress ring
+  - Next step preview
+  - Clear “contract” vs “relax” phases
+- Animations:
+  - Smooth page transitions
+  - SVG progress ring
+  - Expandable timeline
+- Accessibility:
+  - Large buttons
+  - Keyboard navigation
+  - Reduced motion option
+  - ARIA labels
+
+6) Progress Tracking (Paywalled)
+- Streak counter
+- Total minutes trained
+- Completed sessions
+- Level progression
+- Calendar-style overview
+- “Recommended next session” based on plan & rest days
+- Export / reset progress (privacy-first)
+
+7) Settings
+- Account management
+- Billing (Stripe Customer Portal)
+- Reminder preferences
+- Privacy policy / legal placeholders
+- “Delete account & data” option
+
+DATA MODEL (Database):
+- users: id, email, created_at
+- subscriptions: user_id, stripe_customer_id, stripe_subscription_id, status, current_period_end
+- plans: id, name, duration_days, level
+- sessions: id, plan_id, day_index, title, total_seconds
+- exercises: id, name, description, tips_json, mistakes_json
+- session_steps:
+  - id
+  - session_id
+  - exercise_id
+  - step_type (warmup | main | cooldown)
+  - order
+  - work_seconds
+  - rest_seconds
+  - sets
+  - reps
+  - tempo
+- progress:
+  - id
+  - user_id
+  - session_id
+  - completed_at
+  - rating (1–5)
+  - notes
+  - total_time_seconds
+- streaks (optional; can be derived dynamically)
+
+PAYWALL LOGIC:
+- Route guard / middleware:
+  - Free access: landing, onboarding, demo session, pricing
+  - Pro access: everything else
+- Subscription validation via subscription.status (active / trialing)
+- Fallback server-side Stripe API check if webhook not yet processed
+
+STRIPE INTEGRATION:
+- Products & prices via ENV:
+  - STRIPE_PRICE_MONTHLY
+  - STRIPE_PRICE_YEARLY
+  - STRIPE_PRICE_LIFETIME (optional)
+- Endpoints:
+  - /api/stripe/checkout
+  - /api/stripe/webhook (verified with STRIPE_WEBHOOK_SECRET)
+  - /api/stripe/portal
+- Post-checkout redirect → /app/unlocked
+
+ROUTING / PAGES:
+- /               (Landing)
+- /pricing
+- /login
+- /signup
+- /onboarding
+- /app            (Dashboard)
+- /app/library
+- /app/plan/[planId]
+- /app/session/[sessionId]
+- /app/progress
+- /app/settings
+- /app/billing
+
+UI / DESIGN SYSTEM:
+- Modern, calm wellness / fitness aesthetic
+- Soft cards / glassy feel
+- Clean typography, generous spacing
+- Components:
+  - Navbar
+  - Sidebar (desktop)
+  - Bottom navigation (mobile)
+  - Cards
+  - Badges
+  - ProgressRing
+  - TimerControls
+  - Timeline
+  - PaywallModal
+- Dark mode support
+- Skeleton loaders & error states
+
+IMPLEMENTATION DETAILS:
+- Use Server Actions or API Routes for Stripe & Supabase
+- Server-side auth guard for all /app routes
+- Robust timer engine:
+  - Pause / resume
+  - Page visibility handling
+  - Optional localStorage checkpoint
+  - Drift-corrected intervals (requestAnimationFrame or corrected setInterval)
+- Audio cues:
+  - Short sound at phase changes
+  - Toggle on/off in settings
+
+SEED CONTENT (Ready-to-use):
+- 3 plans seeded:
+  - Beginner (14 days)
+  - Intermediate (30 days)
+  - Advanced (60 days)
+- Minimum 5 sessions per plan (demo-ready)
+- Exercises (at least 10):
+  - Gentle Hold
+  - Pulsed Contractions
+  - Stair-Step Holds
+  - Relaxation / Reverse Kegel (gentle)
+  - Breathing & Pelvic Coordination
+  - Light Core Integration
+  - Endurance Hold
+  - Quick Flicks
+  - Release & Relax
+  - Body Scan Cooldown
+- Each exercise includes:
+  - Technique instructions
+  - Common mistakes
+  - Safety notes
+
+QUALITY REQUIREMENTS:
+- Clean, well-structured, commented code
+- Fully clickable, functional app (no dead placeholders)
+- Mobile-first & performant
+- Minimal data collection
+- Simple feature flags for Free vs Pro content
+
+DELIVERABLES:
+1) Complete project with all files.
+2) Ensure `npm install` and `npm run dev` work out of the box.
+3) README including:
+   - Setup instructions
+   - Supabase & Stripe configuration
+   - Webhook setup
+   - Test user flow (Signup → Demo → Paywall → Checkout → Unlocked)
+4) `.env.example` file
+
+ENV VARIABLES (.env.example):
+- NEXT_PUBLIC_APP_URL=
+- SUPABASE_URL=
+- SUPABASE_ANON_KEY=
+- SUPABASE_SERVICE_ROLE_KEY=
+- STRIPE_SECRET_KEY=
+- NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
+- STRIPE_WEBHOOK_SECRET=
+- STRIPE_PRICE_MONTHLY=
+- STRIPE_PRICE_YEARLY=
+- STRIPE_PRICE_LIFETIME=
+
+START INSTRUCTIONS:
+- First scaffold the project structure
+- Then create database schema
+- Seed initial content
+- Build UI
+- Integrate Stripe
+- Add route guards
+- Polish animations & UX
+- Final step: add a short smoke-test checklist in the README
+
+Build it now.
