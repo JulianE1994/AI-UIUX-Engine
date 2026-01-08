@@ -49,6 +49,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [progressData, setProgressData] = useState<ProgressData>({
     completedSessions: [],
     completedDates: [],
+    currentDayIndex: 1,
   });
   const [settings, setSettingsState] = useState<Settings>({
     soundEnabled: true,
@@ -130,6 +131,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       const today = new Date().toISOString().split("T")[0];
       const lastDate = await storage.getLastSessionDate();
 
+      const isAlreadyCompleted = progressData.completedSessions.includes(sessionId);
+
       let newStreak = currentStreak;
       if (lastDate) {
         const lastDateObj = new Date(lastDate);
@@ -138,7 +141,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
           (todayObj.getTime() - lastDateObj.getTime()) / (1000 * 60 * 60 * 24)
         );
 
-        if (diffDays === 1) {
+        if (diffDays === 0) {
+          newStreak = currentStreak;
+        } else if (diffDays === 1) {
           newStreak = currentStreak + 1;
         } else if (diffDays > 1) {
           newStreak = 1;
@@ -147,14 +152,17 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         newStreak = 1;
       }
 
-      const newTotalMinutes = totalMinutes + durationMinutes;
-      const newSessionsCompleted = sessionsCompleted + 1;
+      const newTotalMinutes = totalMinutes + Math.max(durationMinutes, 1);
+      const newSessionsCompleted = isAlreadyCompleted ? sessionsCompleted : sessionsCompleted + 1;
       const newProgressData = {
         ...progressData,
-        completedSessions: [...progressData.completedSessions, sessionId],
+        completedSessions: isAlreadyCompleted
+          ? progressData.completedSessions
+          : [...progressData.completedSessions, sessionId],
         completedDates: progressData.completedDates.includes(today)
           ? progressData.completedDates
           : [...progressData.completedDates, today],
+        currentDayIndex: (progressData.currentDayIndex || 1) + (isAlreadyCompleted ? 0 : 1),
       };
 
       await Promise.all([
@@ -183,13 +191,13 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       storage.setCurrentStreak(0),
       storage.setTotalMinutes(0),
       storage.setSessionsCompleted(0),
-      storage.setProgressData({ completedSessions: [], completedDates: [] }),
+      storage.setProgressData({ completedSessions: [], completedDates: [], currentDayIndex: 1 }),
     ]);
 
     setCurrentStreak(0);
     setTotalMinutes(0);
     setSessionsCompleted(0);
-    setProgressData({ completedSessions: [], completedDates: [] });
+    setProgressData({ completedSessions: [], completedDates: [], currentDayIndex: 1 });
   }, []);
 
   const resetAll = useCallback(async () => {
@@ -201,7 +209,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     setCurrentStreak(0);
     setTotalMinutes(0);
     setSessionsCompleted(0);
-    setProgressData({ completedSessions: [], completedDates: [] });
+    setProgressData({ completedSessions: [], completedDates: [], currentDayIndex: 1 });
     setSettingsState({
       soundEnabled: true,
       vibrationEnabled: true,

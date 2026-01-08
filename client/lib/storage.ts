@@ -73,7 +73,7 @@ export const storage = {
     const value = await AsyncStorage.getItem(KEYS.PROGRESS_DATA);
     return value
       ? JSON.parse(value)
-      : { completedSessions: [], completedDates: [] };
+      : { completedSessions: [], completedDates: [], currentDayIndex: 1 };
   },
 
   async setProgressData(data: ProgressData): Promise<void> {
