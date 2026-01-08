@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -13,8 +13,12 @@ import RootStackNavigator from "@/navigation/RootStackNavigator";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AppStateProvider } from "@/hooks/useAppState";
 import { LanguageProvider } from "@/hooks/useLanguage";
+import { initializeRevenueCat } from "@/lib/revenuecat";
 
 export default function App() {
+  useEffect(() => {
+    initializeRevenueCat();
+  }, []);
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
