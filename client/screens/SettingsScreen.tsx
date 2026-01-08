@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet, ScrollView, Pressable, Switch, Alert, Modal } from "react-native";
+import { View, StyleSheet, ScrollView, Pressable, Switch, Alert, Modal, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
@@ -12,6 +12,9 @@ import { useLanguage } from "@/hooks/useLanguage";
 import { languageNames, Language } from "@/lib/translations";
 import { Spacing, Typography, BorderRadius } from "@/constants/theme";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
+import { PrimaryButton } from "@/components/PrimaryButton";
+
+type ModalType = 'language' | 'resetProgress' | 'deleteData' | 'privacy' | 'terms' | null;
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -96,11 +99,11 @@ export default function SettingsScreen() {
   const [reminderEnabled, setReminderEnabled] = useState(
     settings.reminderEnabled
   );
-  const [showLanguagePicker, setShowLanguagePicker] = useState(false);
+  const [activeModal, setActiveModal] = useState<ModalType>(null);
 
   const handleLanguageSelect = async (lang: Language) => {
     await setLanguage(lang);
-    setShowLanguagePicker(false);
+    setActiveModal(null);
   };
 
   const handleSoundToggle = async (value: boolean) => {
@@ -119,33 +122,21 @@ export default function SettingsScreen() {
   };
 
   const handleResetProgress = () => {
-    Alert.alert(
-      t.settings.resetProgress,
-      t.settings.resetProgressAlert,
-      [
-        { text: t.common.cancel, style: "cancel" },
-        {
-          text: t.common.reset,
-          style: "destructive",
-          onPress: () => resetProgress(),
-        },
-      ]
-    );
+    setActiveModal('resetProgress');
   };
 
   const handleDeleteAccount = () => {
-    Alert.alert(
-      t.settings.deleteAllData,
-      t.settings.deleteDataAlert,
-      [
-        { text: t.common.cancel, style: "cancel" },
-        {
-          text: t.common.delete,
-          style: "destructive",
-          onPress: () => resetAll(),
-        },
-      ]
-    );
+    setActiveModal('deleteData');
+  };
+
+  const confirmResetProgress = async () => {
+    await resetProgress();
+    setActiveModal(null);
+  };
+
+  const confirmDeleteData = async () => {
+    await resetAll();
+    setActiveModal(null);
   };
 
   const handleManageSubscription = () => {
@@ -229,7 +220,7 @@ export default function SettingsScreen() {
           icon="globe"
           title={t.settings.language}
           subtitle={languageNames[language]}
-          onPress={() => setShowLanguagePicker(true)}
+          onPress={() => setActiveModal('language')}
         />
       </View>
 
@@ -245,12 +236,12 @@ export default function SettingsScreen() {
         <SettingRow
           icon="shield"
           title={t.settings.privacyPolicy}
-          onPress={() => Alert.alert(t.settings.privacyPolicy, "Privacy policy would open here.")}
+          onPress={() => setActiveModal('privacy')}
         />
         <SettingRow
           icon="file-text"
           title={t.settings.termsOfService}
-          onPress={() => Alert.alert(t.settings.termsOfService, "Terms of service would open here.")}
+          onPress={() => setActiveModal('terms')}
         />
       </View>
 
@@ -281,16 +272,16 @@ export default function SettingsScreen() {
       </View>
 
       <Modal
-        visible={showLanguagePicker}
+        visible={activeModal === 'language'}
         transparent
         animationType="fade"
-        onRequestClose={() => setShowLanguagePicker(false)}
+        onRequestClose={() => setActiveModal(null)}
       >
         <Pressable 
           style={styles.modalOverlay} 
-          onPress={() => setShowLanguagePicker(false)}
+          onPress={() => setActiveModal(null)}
         >
-          <View style={[styles.modalContent, { backgroundColor: theme.cardBackground }]}>
+          <Pressable style={[styles.modalContent, { backgroundColor: theme.cardBackground }]}>
             <ThemedText style={styles.modalTitle}>{t.settings.language}</ThemedText>
             {(['en', 'de', 'fr', 'it'] as Language[]).map((lang) => (
               <Pressable
@@ -307,7 +298,204 @@ export default function SettingsScreen() {
                 ) : null}
               </Pressable>
             ))}
-          </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
+      <Modal
+        visible={activeModal === 'resetProgress'}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setActiveModal(null)}
+      >
+        <Pressable 
+          style={styles.modalOverlay} 
+          onPress={() => setActiveModal(null)}
+        >
+          <Pressable style={[styles.modalContent, { backgroundColor: theme.cardBackground }]}>
+            <ThemedText style={styles.modalTitle}>{t.settings.resetProgress}</ThemedText>
+            <ThemedText style={[styles.modalText, { color: theme.textSecondary }]}>
+              {t.settings.resetProgressAlert}
+            </ThemedText>
+            <View style={styles.modalButtons}>
+              <Pressable 
+                style={[styles.modalButton, { backgroundColor: theme.backgroundSecondary }]}
+                onPress={() => setActiveModal(null)}
+              >
+                <ThemedText>{t.common.cancel}</ThemedText>
+              </Pressable>
+              <Pressable 
+                style={[styles.modalButton, { backgroundColor: theme.error }]}
+                onPress={confirmResetProgress}
+              >
+                <ThemedText style={{ color: '#fff' }}>{t.common.reset}</ThemedText>
+              </Pressable>
+            </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
+      <Modal
+        visible={activeModal === 'deleteData'}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setActiveModal(null)}
+      >
+        <Pressable 
+          style={styles.modalOverlay} 
+          onPress={() => setActiveModal(null)}
+        >
+          <Pressable style={[styles.modalContent, { backgroundColor: theme.cardBackground }]}>
+            <ThemedText style={styles.modalTitle}>{t.settings.deleteAllData}</ThemedText>
+            <ThemedText style={[styles.modalText, { color: theme.textSecondary }]}>
+              {t.settings.deleteDataAlert}
+            </ThemedText>
+            <View style={styles.modalButtons}>
+              <Pressable 
+                style={[styles.modalButton, { backgroundColor: theme.backgroundSecondary }]}
+                onPress={() => setActiveModal(null)}
+              >
+                <ThemedText>{t.common.cancel}</ThemedText>
+              </Pressable>
+              <Pressable 
+                style={[styles.modalButton, { backgroundColor: theme.error }]}
+                onPress={confirmDeleteData}
+              >
+                <ThemedText style={{ color: '#fff' }}>{t.common.delete}</ThemedText>
+              </Pressable>
+            </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
+      <Modal
+        visible={activeModal === 'privacy'}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setActiveModal(null)}
+      >
+        <Pressable 
+          style={styles.modalOverlay} 
+          onPress={() => setActiveModal(null)}
+        >
+          <Pressable style={[styles.modalContentLarge, { backgroundColor: theme.cardBackground }]}>
+            <View style={styles.modalHeader}>
+              <ThemedText style={styles.modalTitle}>{t.settings.privacyPolicy}</ThemedText>
+              <Pressable onPress={() => setActiveModal(null)}>
+                <Feather name="x" size={24} color={theme.text} />
+              </Pressable>
+            </View>
+            <ScrollView style={styles.modalScroll} showsVerticalScrollIndicator={false}>
+              <ThemedText style={[styles.modalText, { color: theme.textSecondary }]}>
+                {`Last Updated: January 2025
+
+1. Information We Collect
+Kegel Coach collects minimal data to provide you with the best experience:
+- Training progress and statistics
+- App preferences and settings
+- Device information for app functionality
+
+2. How We Use Your Data
+Your data is used exclusively to:
+- Track your training progress
+- Personalize your experience
+- Improve app functionality
+
+3. Data Storage
+All your personal data is stored locally on your device. We do not transmit or store your training data on external servers.
+
+4. Third-Party Services
+We may use third-party services for:
+- Payment processing (for premium subscriptions)
+- Analytics (anonymized usage data)
+
+5. Your Rights
+You can:
+- Delete all your data at any time through Settings
+- Export your training data
+- Contact us for any privacy concerns
+
+6. Contact
+For privacy questions, contact us at privacy@kegelcoach.app`}
+              </ThemedText>
+            </ScrollView>
+            <PrimaryButton 
+              title={t.common.done} 
+              onPress={() => setActiveModal(null)}
+              style={{ marginTop: Spacing.md }}
+            />
+          </Pressable>
+        </Pressable>
+      </Modal>
+
+      <Modal
+        visible={activeModal === 'terms'}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setActiveModal(null)}
+      >
+        <Pressable 
+          style={styles.modalOverlay} 
+          onPress={() => setActiveModal(null)}
+        >
+          <Pressable style={[styles.modalContentLarge, { backgroundColor: theme.cardBackground }]}>
+            <View style={styles.modalHeader}>
+              <ThemedText style={styles.modalTitle}>{t.settings.termsOfService}</ThemedText>
+              <Pressable onPress={() => setActiveModal(null)}>
+                <Feather name="x" size={24} color={theme.text} />
+              </Pressable>
+            </View>
+            <ScrollView style={styles.modalScroll} showsVerticalScrollIndicator={false}>
+              <ThemedText style={[styles.modalText, { color: theme.textSecondary }]}>
+                {`Last Updated: January 2025
+
+1. Acceptance of Terms
+By using Kegel Coach, you agree to these Terms of Service. If you do not agree, please do not use the app.
+
+2. Description of Service
+Kegel Coach is a wellness app designed to help users with pelvic floor exercises. The app provides:
+- Guided training sessions
+- Progress tracking
+- Educational content
+
+3. Health Disclaimer
+Kegel Coach is for general wellness purposes only and is NOT a substitute for professional medical advice. Consult a healthcare provider before starting any exercise program, especially if you:
+- Are pregnant or postpartum
+- Have had recent pelvic surgery
+- Experience pain during exercises
+- Have any medical conditions
+
+4. User Responsibilities
+You agree to:
+- Use the app responsibly
+- Provide accurate information
+- Not misuse the service
+
+5. Subscription Terms
+Premium features require a subscription:
+- Subscriptions auto-renew unless cancelled
+- Refunds are subject to platform policies
+- Prices may change with notice
+
+6. Intellectual Property
+All content, designs, and features are owned by Kegel Coach and protected by copyright.
+
+7. Limitation of Liability
+Kegel Coach is provided "as is" without warranties. We are not liable for any damages arising from app use.
+
+8. Changes to Terms
+We may update these terms. Continued use constitutes acceptance of changes.
+
+9. Contact
+For questions, contact us at support@kegelcoach.app`}
+              </ThemedText>
+            </ScrollView>
+            <PrimaryButton 
+              title={t.common.done} 
+              onPress={() => setActiveModal(null)}
+              style={{ marginTop: Spacing.md }}
+            />
+          </Pressable>
         </Pressable>
       </Modal>
     </ScrollView>
@@ -395,5 +583,36 @@ const styles = StyleSheet.create({
   },
   languageText: {
     ...Typography.bodyMedium,
+  },
+  modalText: {
+    ...Typography.body,
+    lineHeight: 22,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    gap: Spacing.md,
+    marginTop: Spacing.lg,
+  },
+  modalButton: {
+    flex: 1,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.sm,
+    alignItems: 'center',
+  },
+  modalContentLarge: {
+    width: '100%',
+    maxWidth: 400,
+    maxHeight: '80%',
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Spacing.md,
+  },
+  modalScroll: {
+    maxHeight: 400,
   },
 });
