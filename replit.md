@@ -45,7 +45,8 @@ client/
 │   ├── storage.ts             # AsyncStorage utilities
 │   ├── trainingData.ts        # Training plans, sessions, exercises
 │   ├── translations.ts        # Multi-language translations (EN, DE, FR, IT)
-│   └── query-client.ts        # React Query configuration
+│   ├── query-client.ts        # React Query configuration
+│   └── revenuecat.ts          # RevenueCat integration for in-app purchases
 ├── navigation/
 │   ├── RootStackNavigator.tsx # Root navigation (onboarding vs main)
 │   ├── MainTabNavigator.tsx   # Main tab bar navigation
@@ -102,9 +103,26 @@ The app runs on port 8081 (Expo) with the backend on port 5000.
 ### Testing on Device
 Scan QR code from Replit's URL bar to test on physical device via Expo Go.
 
+## In-App Purchases (RevenueCat)
+
+The app uses RevenueCat for in-app purchases. To enable:
+
+1. Set environment variables:
+   - `EXPO_PUBLIC_REVENUECAT_IOS_KEY` - RevenueCat iOS API key
+   - `EXPO_PUBLIC_REVENUECAT_ANDROID_KEY` - RevenueCat Android API key
+
+2. Entitlement identifier: `Kegel Coach Pro`
+
+3. Key files:
+   - `client/lib/revenuecat.ts` - RevenueCat initialization and helpers
+   - `client/screens/PaywallScreen.tsx` - Subscription UI with RevenueCat integration
+   - `client/hooks/useAppState.tsx` - Subscription state management
+
+**Note**: RevenueCat requires a development build (not Expo Go) for native purchases to work.
+
 ## Notes
 
-- Paywall is simulated (no real Stripe integration yet)
 - All data persisted locally with AsyncStorage
 - Dark mode supported automatically
 - Multi-language: All UI text translated to EN, DE, FR, IT (change in Settings)
+- Requires development build for RevenueCat (react-native-purchases)

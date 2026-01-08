@@ -7,6 +7,12 @@ import React, {
   ReactNode,
 } from "react";
 import { storage, UserGoals, ProgressData, Settings } from "@/lib/storage";
+import {
+  getCustomerInfo,
+  checkEntitlement,
+  ENTITLEMENT_IDS,
+  isRevenueCatInitialized,
+} from "@/lib/revenuecat";
 
 interface AppState {
   isLoading: boolean;
@@ -22,8 +28,8 @@ interface AppState {
   completeOnboarding: () => Promise<void>;
   setUserGoals: (goals: UserGoals) => Promise<void>;
   setUserExperience: (experience: string) => Promise<void>;
-  subscribe: () => Promise<void>;
-  unsubscribe: () => Promise<void>;
+  refreshSubscriptionStatus: () => Promise<boolean>;
+  setSubscribed: (subscribed: boolean) => void;
   recordSessionComplete: (
     sessionId: string,
     durationMinutes: number
@@ -116,14 +122,28 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     setUserExperienceState(experience);
   }, []);
 
-  const subscribe = useCallback(async () => {
-    await storage.setIsSubscribed(true);
-    setIsSubscribed(true);
-  }, []);
+  const refreshSubscriptionStatus = useCallback(async (): Promise<boolean> => {
+    if (!isRevenueCatInitialized()) {
+      return isSubscribed;
+    }
+    
+    try {
+      const customerInfo = await getCustomerInfo();
+      if (customerInfo) {
+        const hasPremium = checkEntitlement(customerInfo, ENTITLEMENT_IDS.PREMIUM);
+        setIsSubscribed(hasPremium);
+        await storage.setIsSubscribed(hasPremium);
+        return hasPremium;
+      }
+    } catch (error) {
+      console.error("Error refreshing subscription status:", error);
+    }
+    return isSubscribed;
+  }, [isSubscribed]);
 
-  const unsubscribe = useCallback(async () => {
-    await storage.setIsSubscribed(false);
-    setIsSubscribed(false);
+  const setSubscribedState = useCallback((subscribed: boolean) => {
+    setIsSubscribed(subscribed);
+    storage.setIsSubscribed(subscribed);
   }, []);
 
   const recordSessionComplete = useCallback(
@@ -233,8 +253,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         completeOnboarding,
         setUserGoals,
         setUserExperience,
-        subscribe,
-        unsubscribe,
+        refreshSubscriptionStatus,
+        setSubscribed: setSubscribedState,
         recordSessionComplete,
         updateSettings,
         resetProgress,

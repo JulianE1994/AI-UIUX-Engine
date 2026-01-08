@@ -134,5 +134,5 @@ export function checkEntitlement(
 }
 
 export const ENTITLEMENT_IDS = {
-  PREMIUM: "premium",
+  PREMIUM: "Kegel Coach Pro",
 } as const;

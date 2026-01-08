@@ -1,14 +1,23 @@
-import React, { useState } from "react";
-import { View, StyleSheet, ScrollView, Pressable } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, StyleSheet, ScrollView, Pressable, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
+import { PurchasesPackage } from "react-native-purchases";
 import { ThemedText } from "@/components/ThemedText";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { useTheme } from "@/hooks/useTheme";
 import { useAppState } from "@/hooks/useAppState";
 import { useLanguage } from "@/hooks/useLanguage";
 import { Spacing, Typography, BorderRadius } from "@/constants/theme";
+import {
+  getOfferings,
+  purchasePackage,
+  restorePurchases,
+  isRevenueCatInitialized,
+  ENTITLEMENT_IDS,
+  checkEntitlement,
+} from "@/lib/revenuecat";
 
 type PlanType = "monthly" | "yearly" | "lifetime";
 
@@ -26,9 +35,15 @@ export default function PaywallScreen() {
   const { t } = useLanguage();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
-  const { subscribe, isSubscribed } = useAppState();
+  const { setSubscribed, isSubscribed, refreshSubscriptionStatus } = useAppState();
 
-  const pricingPlans: PricingPlan[] = [
+  const [packages, setPackages] = useState<PurchasesPackage[]>([]);
+  const [selectedPackageIndex, setSelectedPackageIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingOfferings, setIsLoadingOfferings] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fallbackPlans: PricingPlan[] = [
     {
       id: "monthly",
       name: t.paywall.monthly,
@@ -53,21 +68,94 @@ export default function PaywallScreen() {
 
   const benefits = t.paywall.benefits;
 
-  const [selectedPlan, setSelectedPlan] = useState<PlanType>("yearly");
-  const [isLoading, setIsLoading] = useState(false);
+  useEffect(() => {
+    loadOfferings();
+  }, []);
+
+  const loadOfferings = async () => {
+    setIsLoadingOfferings(true);
+    setError(null);
+    
+    if (!isRevenueCatInitialized()) {
+      setIsLoadingOfferings(false);
+      return;
+    }
+
+    try {
+      const offerings = await getOfferings();
+      if (offerings?.current?.availablePackages) {
+        setPackages(offerings.current.availablePackages);
+        const yearlyIndex = offerings.current.availablePackages.findIndex(
+          (pkg) => pkg.packageType === "ANNUAL"
+        );
+        if (yearlyIndex >= 0) {
+          setSelectedPackageIndex(yearlyIndex);
+        }
+      }
+    } catch (err: any) {
+      setError(err.message || "Failed to load offerings");
+    } finally {
+      setIsLoadingOfferings(false);
+    }
+  };
 
   const handleSubscribe = async () => {
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    await subscribe();
+    setError(null);
+
+    if (packages.length > 0) {
+      const selectedPackage = packages[selectedPackageIndex];
+      const result = await purchasePackage(selectedPackage);
+      
+      if (result.success && result.customerInfo) {
+        const hasPremium = checkEntitlement(result.customerInfo, ENTITLEMENT_IDS.PREMIUM);
+        setSubscribed(hasPremium);
+        if (hasPremium) {
+          navigation.goBack();
+        }
+      } else if (result.error && result.error !== "Purchase cancelled") {
+        setError(result.error);
+      }
+    } else {
+      setError("No subscription packages available");
+    }
+
     setIsLoading(false);
-    navigation.goBack();
   };
 
   const handleRestore = async () => {
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    setError(null);
+    
+    const result = await restorePurchases();
+    
+    if (result.success && result.customerInfo) {
+      const hasPremium = checkEntitlement(result.customerInfo, ENTITLEMENT_IDS.PREMIUM);
+      setSubscribed(hasPremium);
+      if (hasPremium) {
+        navigation.goBack();
+      } else {
+        setError("No previous purchases found");
+      }
+    } else if (result.error) {
+      setError(result.error);
+    }
+
     setIsLoading(false);
+  };
+
+  const getPackageDisplayInfo = (pkg: PurchasesPackage, index: number) => {
+    const isAnnual = pkg.packageType === "ANNUAL";
+    const isMonthly = pkg.packageType === "MONTHLY";
+    const isLifetime = pkg.packageType === "LIFETIME";
+    
+    return {
+      name: isAnnual ? t.paywall.yearly : isMonthly ? t.paywall.monthly : isLifetime ? t.paywall.lifetime : pkg.identifier,
+      price: pkg.product.priceString,
+      period: isAnnual ? t.paywall.perYear : isMonthly ? t.paywall.perMonth : isLifetime ? t.paywall.oneTime : "",
+      savings: isAnnual ? t.paywall.bestValue : undefined,
+      popular: isAnnual,
+    };
   };
 
   if (isSubscribed) {
@@ -167,77 +255,103 @@ export default function PaywallScreen() {
           ))}
         </View>
 
-        <View style={styles.plansSection}>
-          {pricingPlans.map((plan) => (
-            <Pressable
-              key={plan.id}
-              onPress={() => setSelectedPlan(plan.id)}
-              style={[
-                styles.planCard,
-                {
-                  backgroundColor: theme.cardBackground,
-                  borderColor:
-                    selectedPlan === plan.id ? theme.primary : theme.border,
-                  borderWidth: selectedPlan === plan.id ? 2 : 1,
-                },
-              ]}
-            >
-              {plan.popular ? (
-                <View
-                  style={[styles.popularBadge, { backgroundColor: theme.primary }]}
+        {isLoadingOfferings ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={theme.primary} />
+          </View>
+        ) : packages.length > 0 ? (
+          <View style={styles.plansSection}>
+            {packages.map((pkg, index) => {
+              const displayInfo = getPackageDisplayInfo(pkg, index);
+              return (
+                <Pressable
+                  key={pkg.identifier}
+                  onPress={() => setSelectedPackageIndex(index)}
+                  style={[
+                    styles.planCard,
+                    {
+                      backgroundColor: theme.cardBackground,
+                      borderColor:
+                        selectedPackageIndex === index ? theme.primary : theme.border,
+                      borderWidth: selectedPackageIndex === index ? 2 : 1,
+                    },
+                  ]}
                 >
-                  <ThemedText style={[styles.popularText, { color: theme.buttonText }]}>
-                    {t.paywall.mostPopular}
-                  </ThemedText>
-                </View>
-              ) : null}
-              <View style={styles.planContent}>
-                <View style={styles.planHeader}>
-                  <View
-                    style={[
-                      styles.radioOuter,
-                      {
-                        borderColor:
-                          selectedPlan === plan.id ? theme.primary : theme.border,
-                      },
-                    ]}
-                  >
-                    {selectedPlan === plan.id ? (
-                      <View
-                        style={[styles.radioInner, { backgroundColor: theme.primary }]}
-                      />
-                    ) : null}
-                  </View>
-                  <View style={styles.planInfo}>
-                    <ThemedText style={styles.planName}>{plan.name}</ThemedText>
-                    {plan.savings ? (
+                  {displayInfo.popular ? (
+                    <View
+                      style={[styles.popularBadge, { backgroundColor: theme.primary }]}
+                    >
+                      <ThemedText style={[styles.popularText, { color: theme.buttonText }]}>
+                        {t.paywall.mostPopular}
+                      </ThemedText>
+                    </View>
+                  ) : null}
+                  <View style={styles.planContent}>
+                    <View style={styles.planHeader}>
                       <View
                         style={[
-                          styles.savingsBadge,
-                          { backgroundColor: theme.success + "20" },
+                          styles.radioOuter,
+                          {
+                            borderColor:
+                              selectedPackageIndex === index ? theme.primary : theme.border,
+                          },
                         ]}
                       >
-                        <ThemedText
-                          style={[styles.savingsText, { color: theme.success }]}
-                        >
-                          {plan.savings}
-                        </ThemedText>
+                        {selectedPackageIndex === index ? (
+                          <View
+                            style={[styles.radioInner, { backgroundColor: theme.primary }]}
+                          />
+                        ) : null}
                       </View>
-                    ) : null}
+                      <View style={styles.planInfo}>
+                        <ThemedText style={styles.planName}>{displayInfo.name}</ThemedText>
+                        {displayInfo.savings ? (
+                          <View
+                            style={[
+                              styles.savingsBadge,
+                              { backgroundColor: theme.success + "20" },
+                            ]}
+                          >
+                            <ThemedText
+                              style={[styles.savingsText, { color: theme.success }]}
+                            >
+                              {displayInfo.savings}
+                            </ThemedText>
+                          </View>
+                        ) : null}
+                      </View>
+                    </View>
+                    <View style={styles.planPricing}>
+                      <ThemedText style={styles.planPrice}>{displayInfo.price}</ThemedText>
+                      <ThemedText
+                        style={[styles.planPeriod, { color: theme.textSecondary }]}
+                      >
+                        {displayInfo.period}
+                      </ThemedText>
+                    </View>
                   </View>
-                </View>
-                <View style={styles.planPricing}>
-                  <ThemedText style={styles.planPrice}>{plan.price}</ThemedText>
-                  <ThemedText
-                    style={[styles.planPeriod, { color: theme.textSecondary }]}
-                  >
-                    {plan.period}
-                  </ThemedText>
-                </View>
-              </View>
-            </Pressable>
-          ))}
-        </View>
+                </Pressable>
+              );
+            })}
+          </View>
+        ) : (
+          <View style={styles.plansSection}>
+            <View style={[styles.noPackagesCard, { backgroundColor: theme.cardBackground }]}>
+              <Feather name="info" size={24} color={theme.textSecondary} />
+              <ThemedText style={[styles.noPackagesText, { color: theme.textSecondary }]}>
+                Subscription packages not available. Please try again later.
+              </ThemedText>
+            </View>
+          </View>
+        )}
+
+        {error ? (
+          <View style={[styles.errorContainer, { backgroundColor: theme.error + "20" }]}>
+            <ThemedText style={[styles.errorText, { color: theme.error }]}>
+              {error}
+            </ThemedText>
+          </View>
+        ) : null}
 
         <Pressable onPress={handleRestore} style={styles.restoreButton}>
           <ThemedText style={[styles.restoreText, { color: theme.textSecondary }]}>
@@ -256,9 +370,10 @@ export default function PaywallScreen() {
         ]}
       >
         <PrimaryButton
-          title={`${t.paywall.subscribe} - ${pricingPlans.find((p) => p.id === selectedPlan)?.price}`}
+          title={`${t.paywall.subscribe}${packages.length > 0 ? ` - ${packages[selectedPackageIndex]?.product.priceString}` : ""}`}
           onPress={handleSubscribe}
           loading={isLoading}
+          disabled={packages.length === 0 || isLoadingOfferings}
           size="large"
         />
         <ThemedText style={[styles.disclaimer, { color: theme.textSecondary }]}>
@@ -440,6 +555,29 @@ const styles = StyleSheet.create({
   },
   subscribedSubtitle: {
     ...Typography.body,
+    textAlign: "center",
+  },
+  loadingContainer: {
+    paddingVertical: Spacing["3xl"],
+    alignItems: "center",
+  },
+  noPackagesCard: {
+    padding: Spacing.xl,
+    borderRadius: BorderRadius.md,
+    alignItems: "center",
+    gap: Spacing.md,
+  },
+  noPackagesText: {
+    ...Typography.body,
+    textAlign: "center",
+  },
+  errorContainer: {
+    padding: Spacing.md,
+    borderRadius: BorderRadius.sm,
+    marginBottom: Spacing.md,
+  },
+  errorText: {
+    ...Typography.small,
     textAlign: "center",
   },
 });
