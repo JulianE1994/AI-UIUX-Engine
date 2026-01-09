@@ -13,7 +13,7 @@ import { useAppState } from "@/hooks/useAppState";
 import { useLanguage } from "@/hooks/useLanguage";
 import { Spacing, Typography, BorderRadius } from "@/constants/theme";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
-import { getSessionById, getDemoSession, getExerciseById, SessionStep } from "@/lib/trainingData";
+import { getSessionById, getDemoSession, getExerciseById, SessionStep, getTranslatedStepType, getTranslatedExerciseName, getTranslatedInstruction } from "@/lib/trainingData";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "SessionPlayer">;
 type RouteProps = RouteProp<RootStackParamList, "SessionPlayer">;
@@ -245,7 +245,7 @@ export default function SessionPlayerScreen() {
   if (!session) {
     return (
       <View style={[styles.container, { backgroundColor: theme.backgroundRoot }]}>
-        <ThemedText>Session not found</ThemedText>
+        <ThemedText>{t.instructions.sessionNotFound}</ThemedText>
       </View>
     );
   }
@@ -342,12 +342,14 @@ export default function SessionPlayerScreen() {
           ]}
         >
           <ThemedText style={[styles.stepTypeText, { color: getPhaseColor() }]}>
-            {currentStep?.stepType.toUpperCase()}
+            {currentStep ? getTranslatedStepType(currentStep.stepType, t.stepTypes).toUpperCase() : ""}
           </ThemedText>
         </View>
-        <ThemedText style={styles.exerciseName}>{exercise?.name || ""}</ThemedText>
+        <ThemedText style={styles.exerciseName}>
+          {currentStep ? getTranslatedExerciseName(currentStep.exerciseId, t.exercises) : ""}
+        </ThemedText>
         <ThemedText style={[styles.exerciseInstruction, { color: theme.textSecondary }]}>
-          {currentStep?.instruction || ""}
+          {currentStep ? getTranslatedInstruction(currentStep.instruction, t.instructions) : ""}
         </ThemedText>
       </View>
 
@@ -380,7 +382,7 @@ export default function SessionPlayerScreen() {
             {t.player.upNext}
           </ThemedText>
           <ThemedText style={styles.nextExercise}>
-            {getExerciseById(session.steps[currentStepIndex + 1].exerciseId)?.name}
+            {getTranslatedExerciseName(session.steps[currentStepIndex + 1].exerciseId, t.exercises)}
           </ThemedText>
         </View>
       ) : null}

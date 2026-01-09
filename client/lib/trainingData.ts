@@ -619,3 +619,95 @@ export const getTranslatedSessionDescription = (
   
   return session.description;
 };
+
+type StepTypeTranslations = {
+  warmup: string;
+  main: string;
+  cooldown: string;
+};
+
+type ExerciseTranslations = {
+  [key: string]: string;
+};
+
+type InstructionTranslations = {
+  breatheDeeply: string;
+  holdGently: string;
+  quickPulses: string;
+  releaseAll: string;
+  centerYourself: string;
+  buildIntensity: string;
+  maintainSteady: string;
+  connectCore: string;
+  fullRelaxation: string;
+  deepBreath: string;
+  maxControl: string;
+  sustainedHold: string;
+  advancedPulse: string;
+  eliteEndurance: string;
+  completeRelease: string;
+  gentleContraction: string;
+  breatheConnect: string;
+  releaseRelax: string;
+  activatePrepare: string;
+  fullIntensity: string;
+  staminaChallenge: string;
+  speedPrecision: string;
+  fullBodyCoord: string;
+  releaseLengthen: string;
+  completeRestoration: string;
+  sessionNotFound: string;
+};
+
+export const getTranslatedStepType = (
+  stepType: "warmup" | "main" | "cooldown",
+  t: StepTypeTranslations
+): string => {
+  return t[stepType] || stepType;
+};
+
+export const getTranslatedExerciseName = (
+  exerciseId: string,
+  t: ExerciseTranslations
+): string => {
+  return t[exerciseId] || getExerciseById(exerciseId)?.name || exerciseId;
+};
+
+const instructionKeyMap: { [key: string]: keyof InstructionTranslations } = {
+  "Breathe deeply and connect with your pelvic floor": "breatheDeeply",
+  "Hold gently, then fully release": "holdGently",
+  "Quick pulses with full relaxation between each": "quickPulses",
+  "Release all tension and breathe deeply": "releaseAll",
+  "Center yourself with breath awareness": "centerYourself",
+  "Build through intensity levels": "buildIntensity",
+  "Maintain steady engagement": "maintainSteady",
+  "Connect pelvic floor with core": "connectCore",
+  "Full body relaxation and integration": "fullRelaxation",
+  "Deep breath awareness": "deepBreath",
+  "Maximum control and precision": "maxControl",
+  "Sustained hold with perfect form": "sustainedHold",
+  "Advanced pulse technique": "advancedPulse",
+  "Elite endurance challenge": "eliteEndurance",
+  "Complete release and recovery": "completeRelease",
+  "Gentle contraction, then full release": "gentleContraction",
+  "Breathe deeply and connect with your body": "breatheConnect",
+  "Release and relax completely": "releaseRelax",
+  "Activate and prepare": "activatePrepare",
+  "Full intensity progression": "fullIntensity",
+  "Extended stamina challenge": "staminaChallenge",
+  "Speed and precision work": "speedPrecision",
+  "Full-body coordination": "fullBodyCoord",
+  "Release and lengthen": "releaseLengthen",
+  "Complete restoration": "completeRestoration",
+};
+
+export const getTranslatedInstruction = (
+  instruction: string,
+  t: InstructionTranslations
+): string => {
+  const key = instructionKeyMap[instruction];
+  if (key && t[key]) {
+    return t[key];
+  }
+  return instruction;
+};
