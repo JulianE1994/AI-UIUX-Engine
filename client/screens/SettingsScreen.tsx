@@ -13,6 +13,7 @@ import { languageNames, Language } from "@/lib/translations";
 import { Spacing, Typography, BorderRadius } from "@/constants/theme";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 import { PrimaryButton } from "@/components/PrimaryButton";
+import { requestNotificationPermission, scheduleDailyReminder, cancelAllReminders } from "@/lib/notifications";
 
 type ModalType = 'language' | 'resetProgress' | 'deleteData' | 'privacy' | 'terms' | null;
 
@@ -117,8 +118,47 @@ export default function SettingsScreen() {
   };
 
   const handleReminderToggle = async (value: boolean) => {
-    setReminderEnabled(value);
-    await updateSettings({ ...settings, reminderEnabled: value });
+    if (Platform.OS === "web") {
+      Alert.alert(
+        t.settings.notificationPermissionTitle || "Notifications Required",
+        t.settings.webNotificationsUnavailable || "Daily reminders are only available on mobile devices. Please use the Expo Go app to enable this feature.",
+        [{ text: t.common.ok || "OK" }]
+      );
+      return;
+    }
+
+    if (value) {
+      const hasPermission = await requestNotificationPermission();
+      if (!hasPermission) {
+        Alert.alert(
+          t.settings.notificationPermissionTitle || "Notifications Required",
+          t.settings.notificationPermissionMessage || "Please enable notifications in your device settings to receive daily reminders.",
+          [{ text: t.common.ok || "OK" }]
+        );
+        setReminderEnabled(false);
+        await updateSettings({ ...settings, reminderEnabled: false });
+        return;
+      }
+      
+      const scheduled = await scheduleDailyReminder(
+        t.settings.reminderNotificationTitle || "Time for your Kegel exercises!",
+        t.settings.reminderNotificationBody || "Keep up your streak with a quick training session.",
+        9,
+        0
+      );
+      
+      if (scheduled) {
+        setReminderEnabled(true);
+        await updateSettings({ ...settings, reminderEnabled: true });
+      } else {
+        setReminderEnabled(false);
+        await updateSettings({ ...settings, reminderEnabled: false });
+      }
+    } else {
+      await cancelAllReminders();
+      setReminderEnabled(false);
+      await updateSettings({ ...settings, reminderEnabled: false });
+    }
   };
 
   const handleResetProgress = () => {

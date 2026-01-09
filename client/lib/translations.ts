@@ -24,6 +24,7 @@ export const translations = {
       save: 'Save',
       yes: 'Yes',
       no: 'No',
+      ok: 'OK',
     },
     tabs: {
       home: 'Home',
@@ -207,6 +208,11 @@ export const translations = {
       resetProgressAlert: 'This will clear all your training history, streaks, and statistics. This cannot be undone.',
       deleteDataAlert: 'This will delete all your data including settings, progress, and preferences. You will need to complete onboarding again.',
       disclaimer: 'This app is for wellness education purposes only. Not medical advice. Consult a doctor or physiotherapist if you experience pain or issues.',
+      notificationPermissionTitle: 'Notifications Required',
+      notificationPermissionMessage: 'Please enable notifications in your device settings to receive daily reminders.',
+      reminderNotificationTitle: 'Time for your Kegel exercises!',
+      reminderNotificationBody: 'Keep up your streak with a quick training session.',
+      webNotificationsUnavailable: 'Daily reminders are only available on mobile devices. Please use the Expo Go app to enable this feature.',
     },
     session: {
       step: 'Step',
@@ -291,6 +297,7 @@ export const translations = {
       save: 'Speichern',
       yes: 'Ja',
       no: 'Nein',
+      ok: 'OK',
     },
     tabs: {
       home: 'Start',
@@ -474,6 +481,11 @@ export const translations = {
       resetProgressAlert: 'Dies löscht deine gesamte Trainingshistorie, Serien und Statistiken. Dies kann nicht rückgängig gemacht werden.',
       deleteDataAlert: 'Dies löscht alle deine Daten einschließlich Einstellungen, Fortschritt und Präferenzen. Du musst das Onboarding erneut durchführen.',
       disclaimer: 'Diese App dient nur zu Wellness-Bildungszwecken. Keine medizinische Beratung. Konsultiere einen Arzt oder Physiotherapeuten bei Schmerzen oder Problemen.',
+      notificationPermissionTitle: 'Benachrichtigungen erforderlich',
+      notificationPermissionMessage: 'Bitte aktiviere Benachrichtigungen in deinen Geräteeinstellungen, um tägliche Erinnerungen zu erhalten.',
+      reminderNotificationTitle: 'Zeit für deine Kegel-Übungen!',
+      reminderNotificationBody: 'Halte deine Serie mit einer kurzen Trainingseinheit aufrecht.',
+      webNotificationsUnavailable: 'Tägliche Erinnerungen sind nur auf Mobilgeräten verfügbar. Bitte verwende die Expo Go App, um diese Funktion zu aktivieren.',
     },
     session: {
       step: 'Schritt',
@@ -558,6 +570,7 @@ export const translations = {
       save: 'Enregistrer',
       yes: 'Oui',
       no: 'Non',
+      ok: 'OK',
     },
     tabs: {
       home: 'Accueil',
@@ -741,6 +754,11 @@ export const translations = {
       resetProgressAlert: 'Cela effacera tout votre historique d\'entraînement, séries et statistiques. Cette action est irréversible.',
       deleteDataAlert: 'Cela supprimera toutes vos données, y compris les paramètres, progrès et préférences. Vous devrez refaire l\'intégration.',
       disclaimer: 'Cette application est uniquement à des fins éducatives sur le bien-être. Pas de conseils médicaux. Consultez un médecin ou kinésithérapeute en cas de douleur ou de problèmes.',
+      notificationPermissionTitle: 'Notifications requises',
+      notificationPermissionMessage: 'Veuillez activer les notifications dans les paramètres de votre appareil pour recevoir des rappels quotidiens.',
+      reminderNotificationTitle: 'C\'est l\'heure de vos exercices de Kegel !',
+      reminderNotificationBody: 'Maintenez votre série avec une courte séance d\'entraînement.',
+      webNotificationsUnavailable: 'Les rappels quotidiens ne sont disponibles que sur les appareils mobiles. Veuillez utiliser l\'application Expo Go pour activer cette fonctionnalité.',
     },
     session: {
       step: 'Étape',
@@ -825,6 +843,7 @@ export const translations = {
       save: 'Salva',
       yes: 'Sì',
       no: 'No',
+      ok: 'OK',
     },
     tabs: {
       home: 'Home',
@@ -1008,6 +1027,11 @@ export const translations = {
       resetProgressAlert: 'Questo cancellerà tutta la cronologia di allenamento, serie e statistiche. Non può essere annullato.',
       deleteDataAlert: 'Questo eliminerà tutti i tuoi dati inclusi impostazioni, progressi e preferenze. Dovrai rifare l\'onboarding.',
       disclaimer: 'Questa app è solo a scopo educativo sul benessere. Non è un consiglio medico. Consulta un medico o fisioterapista in caso di dolore o problemi.',
+      notificationPermissionTitle: 'Notifiche richieste',
+      notificationPermissionMessage: 'Abilita le notifiche nelle impostazioni del dispositivo per ricevere promemoria giornalieri.',
+      reminderNotificationTitle: 'È ora dei tuoi esercizi di Kegel!',
+      reminderNotificationBody: 'Mantieni la tua serie con una breve sessione di allenamento.',
+      webNotificationsUnavailable: 'I promemoria giornalieri sono disponibili solo su dispositivi mobili. Utilizza l\'app Expo Go per abilitare questa funzionalità.',
     },
     session: {
       step: 'Passo',
