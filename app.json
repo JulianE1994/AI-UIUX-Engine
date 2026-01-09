@@ -12,7 +12,8 @@
       "supportsTablet": false,
       "bundleIdentifier": "com.kegelcoach.app",
       "infoPlist": {
-        "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you."
+        "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -50,18 +51,16 @@
           "icon": "./assets/images/notification-icon.png",
           "color": "#0D9488"
         }
-      ],
-      [
-        "react-native-purchases",
-        {
-          "ios": {
-            "usesStoreKit2": true
-          }
-        }
       ]
     ],
     "experiments": {
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "145f7d4e-d068-4535-9e4f-a5b351da622c"
+      }
+    },
+    "owner": "jueb94"
   }
 }
