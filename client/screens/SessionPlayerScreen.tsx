@@ -14,6 +14,7 @@ import { useLanguage } from "@/hooks/useLanguage";
 import { Spacing, Typography, BorderRadius } from "@/constants/theme";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 import { getSessionById, getDemoSession, getExerciseById, SessionStep, getTranslatedStepType, getTranslatedExerciseName, getTranslatedInstruction } from "@/lib/trainingData";
+import { useSoundEffects } from "@/lib/sfx";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "SessionPlayer">;
 type RouteProps = RouteProp<RootStackParamList, "SessionPlayer">;
@@ -27,6 +28,7 @@ export default function SessionPlayerScreen() {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<RouteProps>();
   const { recordSessionComplete, settings } = useAppState();
+  const { playStepChange, playSuccess } = useSoundEffects();
 
   const session =
     route.params.sessionId === "demo-session"
@@ -60,6 +62,7 @@ export default function SessionPlayerScreen() {
     if (!currentStep || !session) return;
 
     triggerHaptic();
+    playStepChange();
 
     if (phase === "countdown") {
       setPhase("work");
@@ -98,6 +101,7 @@ export default function SessionPlayerScreen() {
         return;
       }
 
+      playSuccess();
       setPhase("completed");
       return;
     }
@@ -126,9 +130,10 @@ export default function SessionPlayerScreen() {
         return;
       }
 
+      playSuccess();
       setPhase("completed");
     }
-  }, [phase, currentStep, currentSet, currentRep, currentStepIndex, totalSteps, session, triggerHaptic]);
+  }, [phase, currentStep, currentSet, currentRep, currentStepIndex, totalSteps, session, triggerHaptic, playStepChange, playSuccess]);
 
   useEffect(() => {
     if (isPaused || phase === "completed") {
