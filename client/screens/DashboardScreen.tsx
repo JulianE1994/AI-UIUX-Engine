@@ -13,7 +13,7 @@ import { useAppState } from "@/hooks/useAppState";
 import { useLanguage } from "@/hooks/useLanguage";
 import { Spacing, Typography, BorderRadius } from "@/constants/theme";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
-import { plans, getDemoSession } from "@/lib/trainingData";
+import { plans, getDemoSession, getTranslatedSessionTitle, getTranslatedSessionDescription } from "@/lib/trainingData";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -136,7 +136,7 @@ export default function DashboardScreen() {
               {t.dashboard.recommendedSession}
             </ThemedText>
             <ThemedText style={styles.recommendedTitle}>
-              {nextSession?.title || t.plans.demoSession}
+              {nextSession ? getTranslatedSessionTitle(nextSession, t.sessions) : t.plans.demoSession}
             </ThemedText>
           </View>
           <View
@@ -148,7 +148,7 @@ export default function DashboardScreen() {
           </View>
         </View>
         <ThemedText style={[styles.recommendedDesc, { color: theme.textSecondary }]}>
-          {nextSession?.description || t.plans.demoDescription}
+          {nextSession ? getTranslatedSessionDescription(nextSession, t.sessions) : t.plans.demoDescription}
         </ThemedText>
         <View style={styles.recommendedMeta}>
           <View style={styles.metaItem}>
