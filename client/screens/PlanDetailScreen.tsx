@@ -206,7 +206,7 @@ export default function PlanDetailScreen() {
           ) : null}
         </View>
 
-        <ThemedText style={styles.sessionsTitle}>{t.plans.sessionsCount}</ThemedText>
+        <ThemedText style={styles.sessionsTitle}>{t.plans.sessionsTitle}</ThemedText>
 
         {plan.sessions.map((session, index) => {
           const isCompleted = completedSessionIds.includes(session.id);
