@@ -179,16 +179,35 @@ export default function SessionPlayerScreen() {
     triggerHaptic();
   };
 
+  const wasPausedRef = useRef(false);
+
+  const cleanupAndExit = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    navigation.goBack();
+  }, [navigation]);
+
   const handleExit = () => {
+    wasPausedRef.current = isPaused;
+    setIsPaused(true);
+    
     Alert.alert(
       t.session.exitSession,
       t.session.exitSessionDesc,
       [
-        { text: t.common.cancel, style: "cancel" },
+        { 
+          text: t.common.cancel, 
+          style: "cancel",
+          onPress: () => {
+            setIsPaused(wasPausedRef.current);
+          }
+        },
         {
           text: t.session.exit,
           style: "destructive",
-          onPress: () => navigation.goBack(),
+          onPress: cleanupAndExit,
         },
       ]
     );
@@ -323,6 +342,8 @@ export default function SessionPlayerScreen() {
         <Pressable
           onPress={handleExit}
           style={[styles.exitButton, { backgroundColor: theme.backgroundSecondary }]}
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+          testID="button-exit-session"
         >
           <Feather name="x" size={24} color={theme.text} />
         </Pressable>
@@ -424,6 +445,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: Spacing.xl,
+    zIndex: 10,
   },
   exitButton: {
     width: 44,
