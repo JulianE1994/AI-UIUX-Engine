@@ -16,32 +16,32 @@ export default function OnboardingEducationScreen() {
   const insets = useSafeAreaInsets();
   const { completeOnboarding } = useAppState();
 
-  const [expandedCard, setExpandedCard] = useState<string | null>("what");
+  const [expandedCard, setExpandedCard] = useState<string | null>("q1");
 
   const educationCards = [
     {
-      id: "what",
-      title: t.onboarding.whatAreKegels,
+      id: "q1",
+      title: t.onboarding.q1Title,
       icon: "help-circle" as const,
-      content: t.onboarding.kegelsExplanation,
+      content: t.onboarding.q1Body,
     },
     {
-      id: "benefits",
-      title: t.onboarding.howToPerform,
-      icon: "award" as const,
-      content: `${t.onboarding.howToStep1}. ${t.onboarding.howToStep2}. ${t.onboarding.howToStep3}. ${t.onboarding.howToStep4}.`,
+      id: "q2",
+      title: t.onboarding.q2Title,
+      icon: "target" as const,
+      content: t.onboarding.q2Body,
     },
     {
-      id: "technique",
-      title: t.onboarding.howToPerform,
+      id: "q3",
+      title: t.onboarding.q3Title,
       icon: "check-circle" as const,
-      content: t.onboarding.kegelsExplanation,
+      content: t.onboarding.q3Body,
     },
     {
-      id: "mistakes",
-      title: t.onboarding.howToPerform,
+      id: "q4",
+      title: t.onboarding.q4Title,
       icon: "alert-triangle" as const,
-      content: t.onboarding.kegelsExplanation,
+      content: t.onboarding.q4Body,
     },
   ];
 

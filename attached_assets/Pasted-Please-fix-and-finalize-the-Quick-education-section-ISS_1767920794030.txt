@@ -1,0 +1,109 @@
+Please fix and finalize the "Quick education" section.
+
+ISSUES TO FIX:
+1) Accordion items 2–4 currently repeat the same title/content ("How to perform").
+2) Ensure each accordion item has:
+   - a unique id/key/value
+   - unique translation keys for title and body
+3) Verify the accordion maps over the data correctly (no hardcoded index).
+4) All items must expand the correct, unique content.
+5) Apply the fix consistently across all supported languages (EN, DE, FR, IT).
+
+STRUCTURE:
+Use 4 distinct items with stable IDs:
+- education.q1
+- education.q2
+- education.q3
+- education.q4
+
+Each item must have:
+- title
+- body
+- translated versions
+
+CONTENT (WELLNESS SAFE – NO MEDICAL CLAIMS):
+
+––––––––––––
+ENGLISH (en)
+––––––––––––
+
+education.q1.title = "What are Kegels?"
+education.q1.body =
+"Kegel exercises focus on strengthening and coordinating the pelvic floor muscles. These muscles support bladder, bowel, and sexual wellness and play an important role in core stability."
+
+education.q2.title = "How to find the right muscles"
+education.q2.body =
+"The pelvic floor muscles are the ones you gently engage to lift and support internally. Focus on a light, controlled contraction without holding your breath or tightening your abdomen."
+
+education.q3.title = "How to perform the exercises"
+education.q3.body =
+"Sit or lie comfortably, breathe naturally, and gently contract your pelvic floor muscles. Hold briefly, then fully relax. Smooth, controlled movements are more effective than force."
+
+education.q4.title = "Safety & common mistakes"
+education.q4.body =
+"Avoid pushing or straining. The exercises should feel gentle and controlled, never painful. If you experience discomfort, pause and consult a qualified professional."
+
+––––––––––––
+GERMAN (de)
+––––––––––––
+
+education.q1.title = "Was sind Kegel-Übungen?"
+education.q1.body =
+"Kegel-Übungen stärken und koordinieren die Beckenbodenmuskulatur. Diese Muskeln unterstützen Blase, Darm und das allgemeine Wohlbefinden und tragen zur Körperstabilität bei."
+
+education.q2.title = "Die richtigen Muskeln finden"
+education.q2.body =
+"Die Beckenbodenmuskeln sind die Muskeln, die du sanft nach innen und oben anspannst. Achte auf eine leichte, kontrollierte Aktivierung ohne die Luft anzuhalten oder den Bauch anzuspannen."
+
+education.q3.title = "So führst du die Übungen aus"
+education.q3.body =
+"Nimm eine bequeme Position ein, atme ruhig und spanne den Beckenboden sanft an. Halte kurz und entspanne dann vollständig. Kontrolle ist wichtiger als Kraft."
+
+education.q4.title = "Sicherheit & häufige Fehler"
+education.q4.body =
+"Vermeide Pressen oder starkes Anspannen. Die Übungen sollten sich sanft und kontrolliert anfühlen, niemals schmerzhaft. Bei Beschwerden lege eine Pause ein."
+
+––––––––––––
+FRENCH (fr)
+––––––––––––
+
+education.q1.title = "Que sont les exercices de Kegel ?"
+education.q1.body =
+"Les exercices de Kegel visent à renforcer et coordonner les muscles du plancher pelvien. Ils contribuent au bien-être général et au soutien interne du corps."
+
+education.q2.title = "Identifier les bons muscles"
+education.q2.body =
+"Les muscles du plancher pelvien se contractent doucement vers l’intérieur. L’activation doit être légère et contrôlée, sans bloquer la respiration ni contracter l’abdomen."
+
+education.q3.title = "Comment effectuer les exercices"
+education.q3.body =
+"Installe-toi confortablement, respire naturellement et contracte doucement les muscles du plancher pelvien. Maintiens brièvement, puis relâche complètement."
+
+education.q4.title = "Sécurité et erreurs fréquentes"
+education.q4.body =
+"Évite de pousser ou de forcer. Les exercices doivent rester confortables. En cas d’inconfort, fais une pause et adapte l’intensité."
+
+––––––––––––
+ITALIAN (it)
+––––––––––––
+
+education.q1.title = "Cosa sono gli esercizi di Kegel?"
+education.q1.body =
+"Gli esercizi di Kegel aiutano a rafforzare e coordinare i muscoli del pavimento pelvico, favorendo il benessere generale e il supporto interno del corpo."
+
+education.q2.title = "Individuare i muscoli corretti"
+education.q2.body =
+"I muscoli del pavimento pelvico si attivano con una leggera contrazione interna. L’esercizio deve essere controllato, senza trattenere il respiro o irrigidire l’addome."
+
+education.q3.title = "Come eseguire gli esercizi"
+education.q3.body =
+"Mettiti in una posizione comoda, respira normalmente e contrai delicatamente il pavimento pelvico. Mantieni per un momento, poi rilassa completamente."
+
+education.q4.title = "Sicurezza ed errori comuni"
+education.q4.body =
+"Evita di spingere o forzare. Gli esercizi devono risultare confortevoli e controllati. Se avverti fastidio, riduci l’intensità o fermati."
+
+FINAL CHECK:
+- All 4 accordion items display different titles and content
+- No duplicated keys
+- Works correctly in all supported languages
