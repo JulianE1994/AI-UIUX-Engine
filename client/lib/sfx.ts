@@ -22,7 +22,7 @@ export function useSoundEffects() {
       stepChangePlayer.volume = 0.4;
     }
     if (successPlayer) {
-      successPlayer.volume = 0.7;
+      successPlayer.volume = 0.5;
     }
   }, [stepChangePlayer, successPlayer]);
 
