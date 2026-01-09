@@ -26,6 +26,19 @@ export default function DashboardScreen() {
   const { currentStreak, totalMinutes, sessionsCompleted, isSubscribed, progressData, userExperience } =
     useAppState();
 
+  const getTranslatedPlanName = (planId: string) => {
+    switch (planId) {
+      case "beginner":
+        return t.plans.beginnerName;
+      case "intermediate":
+        return t.plans.intermediateName;
+      case "advanced":
+        return t.plans.advancedName;
+      default:
+        return planId;
+    }
+  };
+
   const getRecommendedPlan = () => {
     if (userExperience === "advanced") return plans[2];
     if (userExperience === "intermediate") return plans[1];
@@ -82,7 +95,7 @@ export default function DashboardScreen() {
           <View style={[styles.streakBadge, { backgroundColor: theme.accent + "20" }]}>
             <Feather name="zap" size={16} color={theme.accent} />
             <ThemedText style={[styles.streakText, { color: theme.accent }]}>
-              {currentStreak} {currentStreak === 1 ? t.dashboard.day : t.dashboard.days} streak
+              {currentStreak} {currentStreak === 1 ? t.dashboard.day : t.dashboard.days} {t.plans.streak}
             </ThemedText>
           </View>
         ) : null}
@@ -123,7 +136,7 @@ export default function DashboardScreen() {
               {t.dashboard.recommendedSession}
             </ThemedText>
             <ThemedText style={styles.recommendedTitle}>
-              {nextSession?.title || "Demo Session"}
+              {nextSession?.title || t.plans.demoSession}
             </ThemedText>
           </View>
           <View
@@ -135,19 +148,19 @@ export default function DashboardScreen() {
           </View>
         </View>
         <ThemedText style={[styles.recommendedDesc, { color: theme.textSecondary }]}>
-          {nextSession?.description || "Try a quick sample workout"}
+          {nextSession?.description || t.plans.demoDescription}
         </ThemedText>
         <View style={styles.recommendedMeta}>
           <View style={styles.metaItem}>
             <Feather name="clock" size={14} color={theme.textSecondary} />
             <ThemedText style={[styles.metaText, { color: theme.textSecondary }]}>
-              {Math.floor((nextSession?.totalSeconds || 120) / 60)} min
+              {Math.floor((nextSession?.totalSeconds || 120) / 60)} {t.plans.min}
             </ThemedText>
           </View>
           <View style={styles.metaItem}>
             <Feather name="list" size={14} color={theme.textSecondary} />
             <ThemedText style={[styles.metaText, { color: theme.textSecondary }]}>
-              {nextSession?.steps.length || 3} exercises
+              {nextSession?.steps.length || 3} {t.plans.exercises}
             </ThemedText>
           </View>
         </View>
@@ -212,11 +225,11 @@ export default function DashboardScreen() {
             ]}
           >
             <View style={styles.planContent}>
-              <ThemedText style={styles.planName}>{plan.name}</ThemedText>
+              <ThemedText style={styles.planName}>{getTranslatedPlanName(plan.id)}</ThemedText>
               <ThemedText
                 style={[styles.planDuration, { color: theme.textSecondary }]}
               >
-                {plan.durationDays} {t.dashboard.days}
+                {plan.durationDays} {t.plans.daysCount}
               </ThemedText>
             </View>
             <Feather name="chevron-right" size={20} color={theme.textSecondary} />

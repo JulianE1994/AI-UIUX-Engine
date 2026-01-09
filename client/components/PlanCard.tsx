@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
+import { useLanguage } from "@/hooks/useLanguage";
 import { Spacing, BorderRadius, Typography } from "@/constants/theme";
 import { Plan } from "@/lib/trainingData";
 
@@ -20,6 +21,46 @@ export function PlanCard({
   isLocked = false,
 }: PlanCardProps) {
   const { theme } = useTheme();
+  const { t } = useLanguage();
+
+  const getTranslatedLevel = () => {
+    switch (plan.level) {
+      case "beginner":
+        return t.levels.beginner;
+      case "intermediate":
+        return t.levels.intermediate;
+      case "advanced":
+        return t.levels.advanced;
+      default:
+        return plan.level;
+    }
+  };
+
+  const getTranslatedPlanName = () => {
+    switch (plan.id) {
+      case "beginner":
+        return t.plans.beginnerName;
+      case "intermediate":
+        return t.plans.intermediateName;
+      case "advanced":
+        return t.plans.advancedName;
+      default:
+        return plan.name;
+    }
+  };
+
+  const getTranslatedPlanDesc = () => {
+    switch (plan.id) {
+      case "beginner":
+        return t.plans.beginnerDesc;
+      case "intermediate":
+        return t.plans.intermediateDesc;
+      case "advanced":
+        return t.plans.advancedDesc;
+      default:
+        return plan.description;
+    }
+  };
 
   const getLevelColor = () => {
     switch (plan.level) {
@@ -70,7 +111,7 @@ export function PlanCard({
           <ThemedText
             style={[styles.levelText, { color: getLevelColor() }]}
           >
-            {plan.level.charAt(0).toUpperCase() + plan.level.slice(1)}
+            {getTranslatedLevel()}
           </ThemedText>
         </View>
         {isLocked ? (
@@ -80,25 +121,25 @@ export function PlanCard({
         ) : null}
       </View>
 
-      <ThemedText style={styles.title}>{plan.name}</ThemedText>
+      <ThemedText style={styles.title}>{getTranslatedPlanName()}</ThemedText>
       <ThemedText
         style={[styles.description, { color: theme.textSecondary }]}
         numberOfLines={2}
       >
-        {plan.description}
+        {getTranslatedPlanDesc()}
       </ThemedText>
 
       <View style={styles.footer}>
         <View style={styles.infoContainer}>
           <Feather name="calendar" size={14} color={theme.textSecondary} />
           <ThemedText style={[styles.infoText, { color: theme.textSecondary }]}>
-            {plan.durationDays} days
+            {plan.durationDays} {t.plans.daysCount}
           </ThemedText>
         </View>
         <View style={styles.infoContainer}>
           <Feather name="layers" size={14} color={theme.textSecondary} />
           <ThemedText style={[styles.infoText, { color: theme.textSecondary }]}>
-            {plan.sessions.length} sessions
+            {plan.sessions.length} {t.plans.sessionsCount}
           </ThemedText>
         </View>
       </View>

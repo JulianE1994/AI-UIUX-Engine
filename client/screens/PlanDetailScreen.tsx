@@ -9,6 +9,7 @@ import { SessionCard } from "@/components/SessionCard";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { useTheme } from "@/hooks/useTheme";
 import { useAppState } from "@/hooks/useAppState";
+import { useLanguage } from "@/hooks/useLanguage";
 import { Spacing, Typography, BorderRadius } from "@/constants/theme";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 import { getPlanById } from "@/lib/trainingData";
@@ -18,6 +19,7 @@ type RouteProps = RouteProp<RootStackParamList, "PlanDetail">;
 
 export default function PlanDetailScreen() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<RouteProps>();
@@ -25,10 +27,51 @@ export default function PlanDetailScreen() {
 
   const plan = getPlanById(route.params.planId);
 
+  const getTranslatedLevel = (level: string) => {
+    switch (level) {
+      case "beginner":
+        return t.levels.beginner;
+      case "intermediate":
+        return t.levels.intermediate;
+      case "advanced":
+        return t.levels.advanced;
+      default:
+        return level;
+    }
+  };
+
+  const getTranslatedPlanName = () => {
+    if (!plan) return "";
+    switch (plan.id) {
+      case "beginner":
+        return t.plans.beginnerName;
+      case "intermediate":
+        return t.plans.intermediateName;
+      case "advanced":
+        return t.plans.advancedName;
+      default:
+        return plan.name;
+    }
+  };
+
+  const getTranslatedPlanDesc = () => {
+    if (!plan) return "";
+    switch (plan.id) {
+      case "beginner":
+        return t.plans.beginnerDesc;
+      case "intermediate":
+        return t.plans.intermediateDesc;
+      case "advanced":
+        return t.plans.advancedDesc;
+      default:
+        return plan.description;
+    }
+  };
+
   if (!plan) {
     return (
       <View style={[styles.container, { backgroundColor: theme.backgroundRoot }]}>
-        <ThemedText>Plan not found</ThemedText>
+        <ThemedText>{t.plans.planNotFound}</ThemedText>
       </View>
     );
   }
@@ -117,26 +160,26 @@ export default function PlanDetailScreen() {
               color={getLevelColor()}
             />
             <ThemedText style={[styles.levelText, { color: getLevelColor() }]}>
-              {plan.level.charAt(0).toUpperCase() + plan.level.slice(1)}
+              {getTranslatedLevel(plan.level)}
             </ThemedText>
           </View>
 
-          <ThemedText style={styles.planTitle}>{plan.name}</ThemedText>
+          <ThemedText style={styles.planTitle}>{getTranslatedPlanName()}</ThemedText>
           <ThemedText style={[styles.planDescription, { color: theme.textSecondary }]}>
-            {plan.description}
+            {getTranslatedPlanDesc()}
           </ThemedText>
 
           <View style={styles.planMeta}>
             <View style={styles.metaItem}>
               <Feather name="calendar" size={16} color={theme.textSecondary} />
               <ThemedText style={[styles.metaText, { color: theme.textSecondary }]}>
-                {plan.durationDays} days
+                {plan.durationDays} {t.plans.daysCount}
               </ThemedText>
             </View>
             <View style={styles.metaItem}>
               <Feather name="layers" size={16} color={theme.textSecondary} />
               <ThemedText style={[styles.metaText, { color: theme.textSecondary }]}>
-                {plan.sessions.length} sessions
+                {plan.sessions.length} {t.plans.sessionsCount}
               </ThemedText>
             </View>
           </View>
@@ -145,7 +188,7 @@ export default function PlanDetailScreen() {
             <View style={styles.progressContainer}>
               <View style={styles.progressHeader}>
                 <ThemedText style={[styles.progressLabel, { color: theme.textSecondary }]}>
-                  Your Progress
+                  {t.plans.yourProgress}
                 </ThemedText>
                 <ThemedText style={[styles.progressValue, { color: theme.primary }]}>
                   {Math.round(progress)}%
@@ -163,7 +206,7 @@ export default function PlanDetailScreen() {
           ) : null}
         </View>
 
-        <ThemedText style={styles.sessionsTitle}>Sessions</ThemedText>
+        <ThemedText style={styles.sessionsTitle}>{t.plans.sessionsCount}</ThemedText>
 
         {plan.sessions.map((session, index) => {
           const isCompleted = completedSessionIds.includes(session.id);
@@ -194,14 +237,14 @@ export default function PlanDetailScreen() {
       >
         {isLocked ? (
           <PrimaryButton
-            title="Unlock Full Access"
+            title={t.paywall.unlockFullAccess}
             onPress={() => navigation.navigate("Paywall")}
             icon="unlock"
             size="large"
           />
         ) : (
           <PrimaryButton
-            title={progress > 0 ? "Continue Training" : "Start Plan"}
+            title={progress > 0 ? t.plans.continueTraining : t.plans.startPlan}
             onPress={handleStartPlan}
             icon="play"
             size="large"

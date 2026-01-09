@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
+import { useLanguage } from "@/hooks/useLanguage";
 import { Spacing, BorderRadius, Typography } from "@/constants/theme";
 import { Session } from "@/lib/trainingData";
 
@@ -22,10 +23,11 @@ export function SessionCard({
   isCurrent = false,
 }: SessionCardProps) {
   const { theme } = useTheme();
+  const { t } = useLanguage();
 
   const formatDuration = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
-    return `${minutes} min`;
+    return `${minutes} ${t.plans.min}`;
   };
 
   return (
@@ -94,7 +96,7 @@ export function SessionCard({
           <View style={styles.stepsContainer}>
             <Feather name="list" size={14} color={theme.textSecondary} />
             <ThemedText style={[styles.steps, { color: theme.textSecondary }]}>
-              {session.steps.length} exercises
+              {session.steps.length} {t.plans.exercises}
             </ThemedText>
           </View>
         </View>
