@@ -546,3 +546,76 @@ export const getDemoSession = (): Session => {
     ],
   };
 };
+
+type SessionTranslations = {
+  day: string;
+  foundation: string;
+  building: string;
+  strengthening: string;
+  progression: string;
+  intensity: string;
+  mastery: string;
+  eliteFoundation: string;
+  peakPerformance: string;
+  masteryIntegration: string;
+  focusTechnique: string;
+  increaseDuration: string;
+  buildEndurance: string;
+  buildFoundations: string;
+  addIntensity: string;
+  developControl: string;
+  highIntensity: string;
+  maxControl: string;
+  integration: string;
+};
+
+export const getTranslatedSessionTitle = (
+  session: Session,
+  t: SessionTranslations
+): string => {
+  const { planId, dayIndex } = session;
+  
+  if (planId === "beginner") {
+    const phase = dayIndex <= 5 ? t.foundation : dayIndex <= 10 ? t.building : t.strengthening;
+    return `${t.day} ${dayIndex}: ${phase}`;
+  }
+  
+  if (planId === "intermediate") {
+    const phase = dayIndex <= 10 ? t.progression : dayIndex <= 20 ? t.intensity : t.mastery;
+    return `${t.day} ${dayIndex}: ${phase}`;
+  }
+  
+  if (planId === "advanced") {
+    const phase = dayIndex <= 20 ? t.eliteFoundation : dayIndex <= 40 ? t.peakPerformance : t.masteryIntegration;
+    return `${t.day} ${dayIndex}: ${phase}`;
+  }
+  
+  return session.title;
+};
+
+export const getTranslatedSessionDescription = (
+  session: Session,
+  t: SessionTranslations
+): string => {
+  const { planId, dayIndex } = session;
+  
+  if (planId === "beginner") {
+    if (dayIndex <= 5) return t.focusTechnique;
+    if (dayIndex <= 10) return t.increaseDuration;
+    return t.buildEndurance;
+  }
+  
+  if (planId === "intermediate") {
+    if (dayIndex <= 10) return t.buildFoundations;
+    if (dayIndex <= 20) return t.addIntensity;
+    return t.developControl;
+  }
+  
+  if (planId === "advanced") {
+    if (dayIndex <= 20) return t.highIntensity;
+    if (dayIndex <= 40) return t.maxControl;
+    return t.integration;
+  }
+  
+  return session.description;
+};

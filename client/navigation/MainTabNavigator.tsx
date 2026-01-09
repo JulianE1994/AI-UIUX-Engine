@@ -8,6 +8,7 @@ import LibraryScreen from "@/screens/LibraryScreen";
 import ProgressScreen from "@/screens/ProgressScreen";
 import SettingsScreen from "@/screens/SettingsScreen";
 import { useTheme } from "@/hooks/useTheme";
+import { useLanguage } from "@/hooks/useLanguage";
 
 export type MainTabParamList = {
   Dashboard: undefined;
@@ -20,9 +21,11 @@ const Tab = createBottomTabNavigator<MainTabParamList>();
 
 export default function MainTabNavigator() {
   const { theme, isDark } = useTheme();
+  const { t, language } = useLanguage();
 
   return (
     <Tab.Navigator
+      key={language}
       initialRouteName="Dashboard"
       screenOptions={{
         tabBarActiveTintColor: theme.primary,
@@ -51,7 +54,7 @@ export default function MainTabNavigator() {
         name="Dashboard"
         component={DashboardScreen}
         options={{
-          title: "Home",
+          title: t.tabs.home,
           tabBarIcon: ({ color, size }) => (
             <Feather name="home" size={size} color={color} />
           ),
@@ -61,7 +64,7 @@ export default function MainTabNavigator() {
         name="Library"
         component={LibraryScreen}
         options={{
-          title: "Library",
+          title: t.tabs.library,
           tabBarIcon: ({ color, size }) => (
             <Feather name="book-open" size={size} color={color} />
           ),
@@ -71,7 +74,7 @@ export default function MainTabNavigator() {
         name="Progress"
         component={ProgressScreen}
         options={{
-          title: "Progress",
+          title: t.tabs.progress,
           tabBarIcon: ({ color, size }) => (
             <Feather name="trending-up" size={size} color={color} />
           ),
@@ -81,7 +84,7 @@ export default function MainTabNavigator() {
         name="Settings"
         component={SettingsScreen}
         options={{
-          title: "Settings",
+          title: t.tabs.settings,
           tabBarIcon: ({ color, size }) => (
             <Feather name="settings" size={size} color={color} />
           ),

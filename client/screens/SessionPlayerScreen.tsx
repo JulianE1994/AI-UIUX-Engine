@@ -367,8 +367,8 @@ export default function SessionPlayerScreen() {
             </ThemedText>
             <ThemedText style={[styles.setLabel, { color: theme.textSecondary }]}>
               {currentStep?.reps
-                ? `Rep ${currentRep}/${currentStep.reps}`
-                : `Set ${currentSet}/${currentStep?.sets || 1}`}
+                ? `${t.player.rep} ${currentRep}/${currentStep.reps}`
+                : `${t.player.set} ${currentSet}/${currentStep?.sets || 1}`}
             </ThemedText>
           </View>
         </ProgressRing>
@@ -377,7 +377,7 @@ export default function SessionPlayerScreen() {
       {currentStepIndex < totalSteps - 1 ? (
         <View style={[styles.nextPreview, { backgroundColor: theme.backgroundSecondary }]}>
           <ThemedText style={[styles.nextLabel, { color: theme.textSecondary }]}>
-            Up Next
+            {t.player.upNext}
           </ThemedText>
           <ThemedText style={styles.nextExercise}>
             {getExerciseById(session.steps[currentStepIndex + 1].exerciseId)?.name}

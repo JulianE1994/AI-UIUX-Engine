@@ -5,7 +5,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
 import { useLanguage } from "@/hooks/useLanguage";
 import { Spacing, BorderRadius, Typography } from "@/constants/theme";
-import { Session } from "@/lib/trainingData";
+import { Session, getTranslatedSessionTitle, getTranslatedSessionDescription } from "@/lib/trainingData";
 
 interface SessionCardProps {
   session: Session;
@@ -76,13 +76,13 @@ export function SessionCard({
           </View>
           <View style={styles.titleContainer}>
             <ThemedText style={styles.title} numberOfLines={1}>
-              {session.title}
+              {getTranslatedSessionTitle(session, t.sessions)}
             </ThemedText>
             <ThemedText
               style={[styles.description, { color: theme.textSecondary }]}
               numberOfLines={1}
             >
-              {session.description}
+              {getTranslatedSessionDescription(session, t.sessions)}
             </ThemedText>
           </View>
         </View>
