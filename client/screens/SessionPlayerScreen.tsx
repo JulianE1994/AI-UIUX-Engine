@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { View, StyleSheet, Pressable, Alert, Platform } from "react-native";
+import { View, StyleSheet, Pressable, Platform, Modal } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -40,6 +40,7 @@ export default function SessionPlayerScreen() {
   const [timeRemaining, setTimeRemaining] = useState(3);
   const [isPaused, setIsPaused] = useState(false);
   const [totalTimeElapsed, setTotalTimeElapsed] = useState(0);
+  const [showExitModal, setShowExitModal] = useState(false);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number>(0);
@@ -186,31 +187,19 @@ export default function SessionPlayerScreen() {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
+    setShowExitModal(false);
     navigation.goBack();
   }, [navigation]);
+
+  const handleExitCancel = useCallback(() => {
+    setShowExitModal(false);
+    setIsPaused(wasPausedRef.current);
+  }, []);
 
   const handleExit = () => {
     wasPausedRef.current = isPaused;
     setIsPaused(true);
-    
-    Alert.alert(
-      t.session.exitSession,
-      t.session.exitSessionDesc,
-      [
-        { 
-          text: t.common.cancel, 
-          style: "cancel",
-          onPress: () => {
-            setIsPaused(wasPausedRef.current);
-          }
-        },
-        {
-          text: t.session.exit,
-          style: "destructive",
-          onPress: cleanupAndExit,
-        },
-      ]
-    );
+    setShowExitModal(true);
   };
 
   const handleComplete = async () => {
@@ -432,6 +421,38 @@ export default function SessionPlayerScreen() {
 
         <View style={styles.controlButtonPlaceholder} />
       </View>
+
+      <Modal
+        visible={showExitModal}
+        transparent
+        animationType="fade"
+        onRequestClose={handleExitCancel}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { backgroundColor: theme.cardBackgroundElevated }]}>
+            <ThemedText style={styles.modalTitle}>{t.session.exitSession}</ThemedText>
+            <ThemedText style={[styles.modalMessage, { color: theme.textSecondary }]}>
+              {t.session.exitSessionDesc}
+            </ThemedText>
+            <View style={styles.modalButtons}>
+              <Pressable
+                onPress={handleExitCancel}
+                style={[styles.modalButton, { backgroundColor: theme.backgroundSecondary }]}
+              >
+                <ThemedText style={styles.modalButtonText}>{t.common.cancel}</ThemedText>
+              </Pressable>
+              <Pressable
+                onPress={cleanupAndExit}
+                style={[styles.modalButton, { backgroundColor: theme.error }]}
+              >
+                <ThemedText style={[styles.modalButtonText, { color: "#FFFFFF" }]}>
+                  {t.session.exit}
+                </ThemedText>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -582,5 +603,43 @@ const styles = StyleSheet.create({
   },
   completedFooter: {
     paddingHorizontal: Spacing.xl,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: Spacing.xl,
+  },
+  modalContent: {
+    width: "100%",
+    maxWidth: 320,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.xl,
+    alignItems: "center",
+  },
+  modalTitle: {
+    ...Typography.h3,
+    marginBottom: Spacing.sm,
+    textAlign: "center",
+  },
+  modalMessage: {
+    ...Typography.body,
+    textAlign: "center",
+    marginBottom: Spacing.xl,
+  },
+  modalButtons: {
+    flexDirection: "row",
+    gap: Spacing.md,
+    width: "100%",
+  },
+  modalButton: {
+    flex: 1,
+    paddingVertical: Spacing.md,
+    borderRadius: BorderRadius.md,
+    alignItems: "center",
+  },
+  modalButtonText: {
+    ...Typography.bodyMedium,
   },
 });
