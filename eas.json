@@ -29,7 +29,10 @@
       "ios": {
         "appleId": "jueb94@web.de",
         "ascAppId": "6757572492",
-        "appleTeamId": "TNX8PV4BY9"
+        "appleTeamId": "TNX8PV4BY9",
+        "ascApiKeyPath": "/tmp/AuthKey.p8",
+        "ascApiKeyIssuerId": "b141afce-c932-4df6-a537-5d24948135b8",
+        "ascApiKeyId": "DH4W73KA23"
       }
     }
   }
