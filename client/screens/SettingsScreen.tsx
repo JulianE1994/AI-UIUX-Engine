@@ -246,11 +246,12 @@ export default function SettingsScreen() {
         <SettingRow
           icon="bell"
           title={t.settings.dailyReminders}
-          subtitle={t.settings.dailyRemindersDesc}
+          subtitle={Platform.OS === "web" ? t.settings.mobileOnlyFeature : t.settings.dailyRemindersDesc}
           rightElement={
             <Switch
               value={reminderEnabled}
               onValueChange={handleReminderToggle}
+              disabled={Platform.OS === "web"}
               trackColor={{ false: theme.border, true: theme.primary + "80" }}
               thumbColor={reminderEnabled ? theme.primary : theme.backgroundTertiary}
             />
