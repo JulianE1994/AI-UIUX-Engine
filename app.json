@@ -9,8 +9,11 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.kegelcoach.app"
+      "supportsTablet": false,
+      "bundleIdentifier": "com.kegelcoach.app",
+      "infoPlist": {
+        "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -40,7 +43,22 @@
           }
         }
       ],
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/notification-icon.png",
+          "color": "#0D9488"
+        }
+      ],
+      [
+        "react-native-purchases",
+        {
+          "ios": {
+            "usesStoreKit2": true
+          }
+        }
+      ]
     ],
     "experiments": {
       "reactCompiler": true
