@@ -14,6 +14,7 @@ import { Spacing, Typography, BorderRadius } from "@/constants/theme";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { requestNotificationPermission, scheduleDailyReminder, cancelAllReminders } from "@/lib/notifications";
+import { debugPrintSubscriptionStatus, REVENUECAT_DEBUG_ENABLED } from "@/lib/revenuecat";
 
 type ModalType = 'language' | 'resetProgress' | 'deleteData' | 'privacy' | 'terms' | null;
 
@@ -305,6 +306,23 @@ export default function SettingsScreen() {
           destructive
         />
       </View>
+
+      {REVENUECAT_DEBUG_ENABLED ? (
+        <View style={[styles.section, { backgroundColor: theme.cardBackground }]}>
+          <ThemedText style={[styles.sectionTitle, { color: theme.textSecondary }]}>
+            Developer
+          </ThemedText>
+          <SettingRow
+            icon="terminal"
+            title="Debug: Print Subscription Status"
+            subtitle="Log RevenueCat info to console"
+            onPress={() => {
+              debugPrintSubscriptionStatus();
+              Alert.alert("Debug", "Subscription status logged to console. Check device logs.");
+            }}
+          />
+        </View>
+      ) : null}
 
       <View style={styles.disclaimerContainer}>
         <ThemedText style={[styles.disclaimer, { color: theme.textSecondary }]}>

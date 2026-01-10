@@ -1,0 +1,35 @@
+Please implement “RevenueCat sanity + refresh” improvements, ONLY IF they are not already implemented.
+
+1) Add DEBUG logging (also in production/TestFlight builds, not only __DEV__), but ONLY if such logs do not already exist:
+- initializeRevenueCat(): log platform, whether apiKey exists (true/false only), and configure success/failure.
+- fetchCustomerInfo(): log active entitlements keys and whether "Kegel Coach Pro" is active.
+- purchase flow success: after purchase, ensure CustomerInfo is refreshed and entitlement status logged.
+- restorePurchases() success: after restore, ensure CustomerInfo is refreshed and entitlement status logged.
+
+2) Ensure the app refreshes subscription state immediately after purchase/restore, ONLY IF not already handled globally:
+- After a successful purchase or restore, call a shared refreshCustomerInfo() helper that:
+  a) calls Purchases.getCustomerInfo()
+  b) updates the global subscription state (useAppState or existing store)
+  c) returns the fresh CustomerInfo
+- Do not duplicate logic if an equivalent refresh already exists.
+
+3) Entitlement check safety:
+- If not already implemented, make checkEntitlement() explicitly return:
+  Boolean(customerInfo.entitlements.active[entitlementId])
+- Add a debug log ONLY when the entitlement is missing.
+
+4) Debug helper (temporary):
+- Add a “Debug: Print Subscription Status” button ONLY if no equivalent debug tool exists.
+- Button must be guarded by a DEBUG flag and NOT always visible in production UI.
+- On press: fetch CustomerInfo and log active entitlements + entitlement result for "Kegel Coach Pro".
+
+5) Environment variable validation:
+- During initialization, log whether EXPO_PUBLIC_REVENUECAT_IOS_KEY / ANDROID_KEY are present (true/false only), ONLY if such logging does not already exist.
+
+Do not change any existing behavior if it already fulfills the above.
+Do not add duplicate logs or duplicate state updates.
+
+After changes:
+- Run TypeScript checks
+- Ensure no build errors
+- Provide a short summary of what was changed vs. what was already present.
