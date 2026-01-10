@@ -11,7 +11,7 @@ const ANDROID_API_KEY = process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY;
 
 let isInitialized = false;
 
-const REVENUECAT_DEBUG = true;
+const REVENUECAT_DEBUG = false;
 
 function rcLog(message: string, data?: any) {
   if (REVENUECAT_DEBUG) {
